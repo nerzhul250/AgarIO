@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class GameHoster implements Runnable, Comparable<GameHoster> {
 	private int max_player_number;
 	private int min_player_number;
+	private boolean gameIsOpen;
 	
 	private Server server;
 	
@@ -15,15 +16,16 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 	
 	private Game gameState;
 
-	public GameHoster(int port,int maxPlayerNumber,int minPlayerNumber,Server s) throws IOException {
+	public GameHoster(ServerSocket ss,int maxPlayerNumber,int minPlayerNumber,Server s) throws IOException {
 		max_player_number=maxPlayerNumber;
 		min_player_number=minPlayerNumber;
+		gameIsOpen=true;
 		
 		playerConnections=new ArrayList<PlayerConnection>();
 		server=s;
 		
 		gameState=new Game();
-		serverSocket = new ServerSocket(port);
+		serverSocket=ss;
 	}
 	
 	@Override
@@ -31,8 +33,8 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 		try {
 			(new Thread(new GameStateRefresher(this))).start();
 			while(GameIsOpen()) {
-				PlayerConnection pc=new PlayerConnection(serverSocket.accept(),this);
-				if(!GameIsFull()) {
+				PlayerConnection pc=new PlayerConnection(serverSocket.accept(),this,playerConnections.size()+1);
+				if(!IsGameFull()) {
 					addPlayer(pc);
 				}else {
 					pc.rejectConnection();
@@ -45,16 +47,17 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 
 	private void addPlayer(PlayerConnection pc) {
 		playerConnections.add(pc);
+		gameState.addNewPlayer(pc.getId());
+		(new Thread(pc)).start();
 		server.ReorderGameHoster(this);
 	}
 
-	private boolean GameIsFull() {
+	public boolean IsGameFull() {
 		return playerConnections.size()==max_player_number;
 	}
 
 	private boolean GameIsOpen() {
-		// TODO Auto-generated method stub
-		return false;
+		return gameIsOpen;
 	}
 	
 	@Override
@@ -90,5 +93,13 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 
 	public void setPlayerConnections(ArrayList<PlayerConnection> playerConnections) {
 		this.playerConnections = playerConnections;
+	}
+
+	public int getLocalPort() {
+		return serverSocket.getLocalPort();
+	}
+
+	public synchronized void idIsMovingTo(int id, int x, int y) {
+		gameState.movePlayerToCoordinate(id,x,y);
 	}
 }

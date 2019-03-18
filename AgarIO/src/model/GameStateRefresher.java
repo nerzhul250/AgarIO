@@ -40,6 +40,9 @@ public class GameStateRefresher implements Runnable {
 			}
 			Thread.sleep(REFRESHDELAY);
 		}
+		for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
+			gamehoster.getPlayerConnections().get(i).sendMessage("E");
+		}
 	}
 
 	private void sendAwaitMessage() throws IOException, InterruptedException {
