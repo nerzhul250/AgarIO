@@ -18,14 +18,13 @@ public class Game implements Serializable{
 	}
 
 	private void RandomizedFoodSpawning() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	public void movePlayerToCoordinate(int id, int x, int y) {
 		Player p=players.get(id);
 		Coordinate newCoordinate=p.ComputeNewCoordinate(x,y);
-		if(!gameObjects.containsKey(newCoordinate)) {
+		if(!gameObjects.containsKey(newCoordinate)){
 			gameObjects.remove(p.getPosition());
 			gameObjects.put(newCoordinate,p);
 			p.setPosition(newCoordinate.x,newCoordinate.y);

@@ -8,13 +8,13 @@ import java.io.IOException;
  * @author Usuario
  *
  */
-public class GameStateRefresher implements Runnable {
+public class GameStateManager implements Runnable {
 	
 	public final static int REFRESHDELAY=1000;
 	
 	private GameHoster gamehoster;
 	
-	public GameStateRefresher(GameHoster gamehoster) {
+	public GameStateManager(GameHoster gamehoster) {
 		this.gamehoster=gamehoster;
 	}
 	
@@ -31,6 +31,18 @@ public class GameStateRefresher implements Runnable {
 			e.printStackTrace();
 		}
 	}
+	
+	private void sendAwaitMessage() throws IOException, InterruptedException {
+		while(!gamehoster.IsRunning()) {
+			for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
+				gamehoster.getPlayerConnections().get(i).sendMessage("W");
+			}
+			Thread.sleep(REFRESHDELAY);
+		}	
+		for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
+			gamehoster.getPlayerConnections().get(i).sendMessage("R");
+		}
+	}
 
 	private void sendGameState() throws InterruptedException, IOException {
 		while(gamehoster.IsRunning()) {
@@ -42,18 +54,6 @@ public class GameStateRefresher implements Runnable {
 		}
 		for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
 			gamehoster.getPlayerConnections().get(i).sendMessage("E");
-		}
-	}
-
-	private void sendAwaitMessage() throws IOException, InterruptedException {
-		while(!gamehoster.IsRunning()) {
-			for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
-				gamehoster.getPlayerConnections().get(i).sendMessage("W");
-			}
-			Thread.sleep(REFRESHDELAY);
-		}	
-		for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
-			gamehoster.getPlayerConnections().get(i).sendMessage("R");
 		}
 	}
 

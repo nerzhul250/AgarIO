@@ -9,7 +9,7 @@ import javax.net.ssl.SSLServerSocketFactory;
 
 public class Server {
 
-	public static final int PORT_RECEIVE = 8000;
+	public static final int PORT_RECEIVE =8000;
 	public static final int MAXPLAYERNUM=5;
 	public static final int MAXGAMEHOSTERSNUM=1;
 	public static final int MINPLAYERNUM=2;

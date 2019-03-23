@@ -31,7 +31,7 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 	@Override
 	public void run() {
 		try {
-			(new Thread(new GameStateRefresher(this))).start();
+			(new Thread(new GameStateManager(this))).start();
 			while(GameIsOpen()) {
 				PlayerConnection pc=new PlayerConnection(serverSocket.accept(),this,playerConnections.size()+1);
 				if(!IsGameFull()) {

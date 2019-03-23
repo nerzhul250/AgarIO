@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class ClientAttendant implements Runnable {
+	
 	private Server server;
 	private Socket client;
+	
 	public ClientAttendant(Socket client, Server s) {
 		server=s;
 		this.client=client;
@@ -21,7 +23,7 @@ public class ClientAttendant implements Runnable {
 			in = new DataInputStream(client.getInputStream());
 			out= new DataOutputStream(client.getOutputStream());
 			String requiredService=in.readUTF();
-			if(requiredService.equals("R")) {
+			if(requiredService.equals("R")){
 				String email=in.readUTF();
 				String nickname=in.readUTF();
 				String password=in.readUTF();
