@@ -1,5 +1,6 @@
 package registrationManagement;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -16,7 +17,7 @@ public class Server {
 	public static final int MAXGAMEHOSTERSNUM=1;
 	public static final int MINPLAYERNUM=2;
 	
-	public static final String KEYSTORE_LOCATION = "..\\keystore.jks";
+	public static final String KEYSTORE_LOCATION = "../../../keyStore/keystore.jks";
 	public static final String KEYSTORE_PASSWORD = "shwq1998";
 	
 	private boolean serverIsOn;
@@ -29,12 +30,14 @@ public class Server {
 		gameHosters=new TreeSet<GameHoster>();
 		dbm=new DataBaseManager();
 		serverIsOn=true;
-		
-		System.setProperty("javax.net.ssl.keyStore", KEYSTORE_LOCATION);
-		System.setProperty("javax.net.ssl.keyStorePassword", KEYSTORE_PASSWORD);
-		SSLServerSocketFactory ssf = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-		
-		serverSocketReceived=ssf.createServerSocket(PORT_RECEIVE);
+		File fl = new File(KEYSTORE_LOCATION);
+		System.out.println(fl.exists());
+//		
+//		System.setProperty("javax.net.ssl.keyStore", KEYSTORE_LOCATION);
+//		System.setProperty("javax.net.ssl.keyStorePassword", KEYSTORE_PASSWORD);
+//		SSLServerSocketFactory ssf = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+//		
+//		serverSocketReceived=ssf.createServerSocket(PORT_RECEIVE);
 	}
 	
 	private Socket getClientConnection() throws IOException {
