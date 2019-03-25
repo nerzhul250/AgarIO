@@ -1,8 +1,10 @@
-package model;
+package gameServer;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+
+import registrationManagement.Server;
 
 public class GameHoster implements Runnable, Comparable<GameHoster> {
 	private int max_player_number;

@@ -1,4 +1,4 @@
-package model;
+package registrationManagement;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -38,7 +38,7 @@ public class ClientAttendant implements Runnable {
 				String email=in.readUTF();
 				String password=in.readUTF();
 				try {
-					String nickname=server.getDbm().checkUser(email,password);
+					String nickname=server.getDbm().checkUser(email,password).getUserName();
 					int portGameHoster=server.getAvailableGameHoster();
 					out.writeUTF(portGameHoster+":"+nickname);
 				} catch (Exception e) {

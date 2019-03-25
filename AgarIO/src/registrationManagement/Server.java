@@ -1,4 +1,4 @@
-package model;
+package registrationManagement;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.util.TreeSet;
 
 import javax.net.ssl.SSLServerSocketFactory;
+
+import gameServer.GameHoster;
 
 public class Server {
 

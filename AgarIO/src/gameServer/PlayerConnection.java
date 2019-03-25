@@ -1,4 +1,4 @@
-package model;
+package gameServer;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
