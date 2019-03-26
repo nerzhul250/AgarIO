@@ -108,6 +108,14 @@ public class RegisterAndLoginController implements Initializable{
 				return;
 			}
 			
+			if (email.equals("") || nick.equals("") || pass1.equals("") ) {
+				Alert al = new Alert(AlertType.WARNING);
+				al.setTitle("Datos en blanco");
+				al.setContentText("Por favor no deje datos en blanco");
+				al.showAndWait();
+				return;
+			}
+			
 			socketToLoginSystem = sf.createSocket(IP_DIRECTION, Server.PORT_RECEIVE);
 			BufferedReader br = new BufferedReader(new InputStreamReader(socketToLoginSystem.getInputStream()));
 			PrintWriter out = new PrintWriter(socketToLoginSystem.getOutputStream(), true);

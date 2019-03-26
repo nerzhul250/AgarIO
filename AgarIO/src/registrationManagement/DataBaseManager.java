@@ -1,15 +1,45 @@
 package registrationManagement;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import javax.imageio.stream.FileImageInputStream;
+
 public class DataBaseManager {
+	public final static String FILE_PATH_USERS = "./data/users";
+	public final static String FILE_PATH_NICKS = "./data/nicks";
+	
 	HashMap<String, UserRegistered> usersRegistered;
 	HashSet<String> nicksInUse;
 	
 	public DataBaseManager() {
-		usersRegistered = new HashMap<String, UserRegistered>();
-		nicksInUse = new HashSet<String>();
+		File f = new File(FILE_PATH_USERS);
+		if (!f.exists()) {
+			usersRegistered = new HashMap<String, UserRegistered>();
+			nicksInUse = new HashSet<String>();
+		} else {
+			try {
+				FileInputStream fin = new FileInputStream(f);
+				ObjectInputStream in = new ObjectInputStream(fin);
+				usersRegistered = (HashMap<String, UserRegistered>) in.readObject();
+				
+				f = new File(FILE_PATH_NICKS);
+				fin = new FileInputStream(f);
+				in = new ObjectInputStream(fin);
+				nicksInUse = (HashSet<String>) in.readObject();
+			} catch (IOException | ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public synchronized void saveNewUser(String email, String nickname, String password) throws Exception {
@@ -19,6 +49,16 @@ public class DataBaseManager {
 		UserRegistered newUser = new UserRegistered(nickname, email, password);
 		usersRegistered.put(email, newUser);
 		nicksInUse.add(nickname);
+		
+		File f = new File(FILE_PATH_USERS);
+		FileOutputStream fout = new FileOutputStream(f);
+		ObjectOutputStream out = new ObjectOutputStream(fout);
+		out.writeObject(usersRegistered);
+		
+		f = new File(FILE_PATH_NICKS);
+		fout = new FileOutputStream(f);
+		out = new ObjectOutputStream(fout);
+		out.writeObject(nicksInUse);
 	}
 
 	public synchronized UserRegistered checkUser(String email, String password) throws Exception{

@@ -1,6 +1,8 @@
 package registrationManagement;
 
-public class UserRegistered {
+import java.io.Serializable;
+
+public class UserRegistered implements Serializable{
 	
 	private String userName;
 	private String email;
