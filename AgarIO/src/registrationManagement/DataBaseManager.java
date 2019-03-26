@@ -9,6 +9,7 @@ public class DataBaseManager {
 	
 	public DataBaseManager() {
 		usersRegistered = new HashMap<String, UserRegistered>();
+		nicksInUse = new HashSet<String>();
 	}
 
 	public synchronized void saveNewUser(String email, String nickname, String password) throws Exception {

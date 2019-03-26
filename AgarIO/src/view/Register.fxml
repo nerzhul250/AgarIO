@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.RegisterAndLoginController">
+   <children>
+      <PasswordField fx:id="passSecondPass" layoutX="272.0" layoutY="275.0" prefHeight="25.0" prefWidth="201.0" />
+      <PasswordField fx:id="passFirstPass" layoutX="272.0" layoutY="188.0" prefHeight="25.0" prefWidth="201.0" />
+      <Label layoutX="35.0" layoutY="61.0" text="Correo electrónico" />
+      <Label layoutX="35.0" layoutY="111.0" text="Nickname" />
+      <Label layoutX="35.0" layoutY="192.0" text="Contraseña" />
+      <Label layoutX="35.0" layoutY="279.0" text="Repita su contraseña" />
+      <TextField fx:id="txtNewEmail" layoutX="272.0" layoutY="57.0" prefHeight="25.0" prefWidth="201.0" />
+      <TextField fx:id="txtNickName" layoutX="272.0" layoutY="107.0" prefHeight="25.0" prefWidth="201.0" />
+      <Button layoutX="473.0" layoutY="347.0" mnemonicParsing="false" onAction="#register" text="Registrarse" />
+   </children>
+</AnchorPane>

@@ -1,7 +1,10 @@
 package registrationManagement;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.TreeSet;
@@ -17,7 +20,7 @@ public class Server {
 	public static final int MAXGAMEHOSTERSNUM=1;
 	public static final int MINPLAYERNUM=2;
 	
-	public static final String KEYSTORE_LOCATION = "../../../keyStore/keystore.jks";
+	public static final String KEYSTORE_LOCATION = "./keyStore/keystore.jks";
 	public static final String KEYSTORE_PASSWORD = "shwq1998";
 	
 	private boolean serverIsOn;
@@ -30,14 +33,12 @@ public class Server {
 		gameHosters=new TreeSet<GameHoster>();
 		dbm=new DataBaseManager();
 		serverIsOn=true;
-		File fl = new File(KEYSTORE_LOCATION);
-		System.out.println(fl.exists());
-//		
-//		System.setProperty("javax.net.ssl.keyStore", KEYSTORE_LOCATION);
-//		System.setProperty("javax.net.ssl.keyStorePassword", KEYSTORE_PASSWORD);
-//		SSLServerSocketFactory ssf = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-//		
-//		serverSocketReceived=ssf.createServerSocket(PORT_RECEIVE);
+		
+		System.setProperty("javax.net.ssl.keyStore", KEYSTORE_LOCATION);
+		System.setProperty("javax.net.ssl.keyStorePassword", KEYSTORE_PASSWORD);
+		SSLServerSocketFactory ssf = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+		
+		serverSocketReceived=ssf.createServerSocket(PORT_RECEIVE);
 	}
 	
 	private Socket getClientConnection() throws IOException {
@@ -56,6 +57,7 @@ public class Server {
 			while(server.serverIsOn) {
 				Socket client=server.getClientConnection();
 				(new Thread(new ClientAttendant(client,server))).start();
+				
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -72,7 +74,7 @@ public class Server {
 	}
 
 	public synchronized int getAvailableGameHoster() throws IOException {
-		if(gameHosters.first().IsGameFull()) {
+		if(gameHosters.isEmpty() || gameHosters.first().IsGameFull() ) {
 			gameHosters.add(new GameHoster(new ServerSocket(0),MAXPLAYERNUM,MINPLAYERNUM,this));
 			(new Thread(gameHosters.first())).start();
 			return gameHosters.first().getLocalPort();
