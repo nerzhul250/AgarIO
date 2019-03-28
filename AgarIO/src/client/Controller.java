@@ -218,12 +218,12 @@ public class Controller implements Initializable{
 		Parent root;
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/GamePanel.fxml"));
+			loader.setController(this);
 			root = loader.load();
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
 			stage.setScene(scene);
 			stage.show();
-			loader.setController(this);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -237,10 +237,14 @@ public class Controller implements Initializable{
 		double h=e.getSceneY();
 		double W=gamePane.getWidth();
 		double H=gamePane.getHeight();
+		System.out.println("Y");
 		try {
+			System.out.println("E");
 			transmitMovements.write(w+":"+h+":"+W+":"+H+"\n");
+			System.out.println("S");
+			transmitMovements.flush();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+			//TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
