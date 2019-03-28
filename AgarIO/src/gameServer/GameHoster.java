@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 
+import gameModel.Game;
 import registrationManagement.Server;
 
 public class GameHoster implements Runnable, Comparable<GameHoster> {
 	private int max_player_number;
 	private int min_player_number;
+	private int index;
+	
 	private boolean gameIsOpen;
 	
 	private Server server;
@@ -34,8 +37,12 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 	public void run() {
 		try {
 			(new Thread(new GameStateManager(this))).start();
+			System.out.println("SERVERDOWN1");
 			while(GameIsOpen()) {
-				PlayerConnection pc=new PlayerConnection(serverSocket.accept(),this,playerConnections.size()+1);
+				System.out.println("SERVERDOWN");
+				PlayerConnection pc=new PlayerConnection(serverSocket.accept(),this,index++);
+				System.out.println(pc.getId());
+				pc.sendData(pc.getId());
 				if(!IsGameFull()) {
 					addPlayer(pc);
 				}else {
@@ -85,7 +92,7 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 		return playerConnections.size()>=min_player_number;
 	}
 
-	public Object getGame() {
+	public Game getGame() {
 		return gameState;
 	}
 	
@@ -102,6 +109,10 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 	}
 
 	public synchronized void idIsMovingTo(int id, int x, int y) {
-		gameState.movePlayerToCoordinate(id,x,y);
+		gameState.setPlayerMovingCoordinate(id,x,y);
+	}
+
+	public void powerOff() {
+		gameIsOpen=false;
 	}
 }

@@ -1,17 +1,28 @@
 package gameServer;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import gameModel.Game;
+
 public class PlayerConnection implements Runnable {
+	
+	public final static String WAITMESSAGE="W";
+	public final static String RUNNINGMESSAGE="R";
+	public final static String FINALMESSAGE="F";	
 	
 	public final static int DELAY=100;
 	
 	private Socket socket;
+	private ObjectOutputStream oos;
+	private BufferedReader in;
+	
 	private GameHoster gameHoster;
 	private String nickname;
 	private int id;
@@ -19,6 +30,8 @@ public class PlayerConnection implements Runnable {
 	
 	public PlayerConnection(Socket accept, GameHoster gh,int id) throws IOException {
 		socket=accept;
+		oos=new ObjectOutputStream(socket.getOutputStream());
+		in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		gameHoster=gh;
 		this.id=id;
 		isPlayerConnected=true;
@@ -27,28 +40,30 @@ public class PlayerConnection implements Runnable {
 	
 	@Override
 	public void run() {
-		DataInputStream in;
 		try {
-			in = new DataInputStream(socket.getInputStream());
 			while(isPlayerConnected) {
-				String[] coordinate=in.readUTF().split(":");
-				int x=Integer.parseInt(coordinate[0]);
-				int y=Integer.parseInt(coordinate[1]);
-				gameHoster.idIsMovingTo(id,x,y);
-				Thread.sleep(DELAY); //VERY DANGEROUSSS
+				String[] coordinate=in.readLine().split(":");
+				double w=Double.parseDouble(coordinate[0]);
+				double h=Double.parseDouble(coordinate[1]);
+				double W=Double.parseDouble(coordinate[2]);
+				double H=Double.parseDouble(coordinate[3]);
+				double x0=gameHoster.getGame().players.get(id).getPosition().x;
+				double y0=gameHoster.getGame().players.get(id).getPosition().y;
+				double r=gameHoster.getGame().players.get(id).getRadius();
+				double X=2*r+Game.XPadding*2;
+				double Y=2*r+Game.YPadding*2;
+				double x=(X/W)*(w+(W*x0/X)-(W/2));
+				double y=(Y/H)*(h+(H*y0/Y)-(H/2));
+				gameHoster.idIsMovingTo(id,(int)x,(int)y);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public void rejectConnection() {
-		// TODO Auto-generated method stub
-		
+	public void rejectConnection() throws IOException {
+		sendData(PlayerConnection.FINALMESSAGE);
 	}
 	
 	public String getNickname() {
@@ -56,24 +71,13 @@ public class PlayerConnection implements Runnable {
 	}
 
 	public void setNickname() throws IOException {
-		DataInputStream in;
-		in = new DataInputStream(socket.getInputStream());
-		nickname=in.readUTF();
+		System.out.println("USERRa");
+		nickname=in.readLine();
+		System.out.println("USERRd");
 	}
-
 	
-	public void sendMessage(String string) throws IOException {
-		DataOutputStream out;
-		out = new DataOutputStream(socket.getOutputStream());
-		out.writeUTF(string);
-	}
-
 	public void sendData(Object o) throws IOException {
-		// get the output stream from the socket.
-        OutputStream outputStream = socket.getOutputStream();
-        // create an object output stream from the output stream so we can send an object through it
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-        objectOutputStream.writeObject(o);
+        oos.writeObject(o);
 	}
 
 	public int getId() {

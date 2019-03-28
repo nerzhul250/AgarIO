@@ -51,6 +51,8 @@ public class ClientAttendant implements Runnable {
 					String nickname=server.getDbm().checkUser(email,password).getUserName();
 					int portGameHoster=server.getAvailableGameHoster();
 					out.println(ACCEPTED);
+					out.println(portGameHoster);
+					out.println(nickname);
 				} catch (Exception e) {
 					out.println(ERROR);
 					e.printStackTrace();

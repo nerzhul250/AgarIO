@@ -10,7 +10,7 @@ import java.io.IOException;
  */
 public class GameStateManager implements Runnable {
 	
-	public final static int REFRESHDELAY=1000;
+	public final static int REFRESHDELAY=40;
 	
 	private GameHoster gamehoster;
 	
@@ -33,19 +33,31 @@ public class GameStateManager implements Runnable {
 	}
 	
 	private void sendAwaitMessage() throws IOException, InterruptedException {
+		boolean awaitCompleted=true;
+		long startTime=System.currentTimeMillis();
 		while(!gamehoster.IsRunning()) {
+			if(System.currentTimeMillis()-startTime>120000) {awaitCompleted=false;break;}
 			for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
-				gamehoster.getPlayerConnections().get(i).sendMessage("W");
+				gamehoster.getPlayerConnections().get(i).sendData(PlayerConnection.WAITMESSAGE);
 			}
 			Thread.sleep(REFRESHDELAY);
-		}	
-		for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
-			gamehoster.getPlayerConnections().get(i).sendMessage("R");
+		 }
+		if(awaitCompleted) {
+			for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
+				gamehoster.getPlayerConnections().get(i).sendData(PlayerConnection.RUNNINGMESSAGE);
+			}
+			(new Thread(gamehoster.getGame())).start();
+		}else {
+			for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
+				gamehoster.getPlayerConnections().get(i).sendData(PlayerConnection.FINALMESSAGE);
+			}
 		}
 	}
 
 	private void sendGameState() throws InterruptedException, IOException {
+		long startTime=System.currentTimeMillis();
 		while(gamehoster.IsRunning()) {
+			if(System.currentTimeMillis()-startTime>300000) {break;}
 			Object o=gamehoster.getGame();
 			for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
 				gamehoster.getPlayerConnections().get(i).sendData(o);
@@ -53,8 +65,9 @@ public class GameStateManager implements Runnable {
 			Thread.sleep(REFRESHDELAY);
 		}
 		for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
-			gamehoster.getPlayerConnections().get(i).sendMessage("E");
+			gamehoster.getPlayerConnections().get(i).sendData(PlayerConnection.FINALMESSAGE);
 		}
+		gamehoster.powerOff();
 	}
 
 }

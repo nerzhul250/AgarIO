@@ -57,7 +57,6 @@ public class Server {
 			while(server.serverIsOn) {
 				Socket client=server.getClientConnection();
 				(new Thread(new ClientAttendant(client,server))).start();
-				
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
