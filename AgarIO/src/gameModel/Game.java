@@ -7,31 +7,35 @@ import java.util.Iterator;
 
 import javafx.scene.paint.Color;
 
-public class Game implements Serializable, Runnable{
+public class Game implements Runnable{
 	
-	public final static int REFRESHDELAY=100;
+	public final static int REFRESHDELAY=250;
 	
 	public final static int XPadding=100;
 	public final static int YPadding=100;
 	
-	public final static int Xlength=15000;
-	public final static int Ylength=15000;
-	public final static int MAXFOODNUMBER=500;
+	public final static int Xlength=1000;
+	public final static int Ylength=1000;
+	public final static int MAXFOODNUMBER=100;
+	
+	private int gameObjectIdexes;
 	
 	private int numberOfPlayersAlive;
 	private int amountOfFood;
 	
+	public HashMap<Integer,GameObject> gameObjectsFromID;
 	public HashMap<Coordinate,GameObject> gameObjects;
 	public HashMap<Integer,Player> players;
 	
 	
 	public Game() {
+		gameObjectsFromID=new HashMap<Integer,GameObject>();
 		gameObjects=new HashMap<Coordinate,GameObject>(); 
 		players=new HashMap<Integer,Player>();
 	}
 
 	private void RandomizedFoodSpawning() {
-		if(MAXFOODNUMBER>amountOfFood) {
+		while(MAXFOODNUMBER>amountOfFood) {
 			int x=(int) (Math.random()*Xlength);
 			int y=(int) (Math.random()*Ylength);
 			Coordinate c=new Coordinate(x,y);
@@ -39,15 +43,20 @@ public class Game implements Serializable, Runnable{
 				c.x=(int) (Math.random()*Xlength);
 				c.y=(int) (Math.random()*Ylength);
 			}
-			gameObjects.put(c,new Food(c.x,c.y));
-			amountOfFood++;	
+			Food f=new Food(c.x,c.y);
+			f.setGlobalIndex(gameObjectIdexes++);
+			gameObjectsFromID.put(f.getGlobalIndex(),f);
+			gameObjects.put(c,f);
+			amountOfFood++;
 		}
 	}
 
 	public void movePlayerToCoordinate(int id, int x, int y) {
 		Player p=players.get(id);
 		Coordinate newCoordinate=p.ComputeNewCoordinate(x,y);
-		if(!gameObjects.containsKey(newCoordinate)){
+		//System.out.println("pos: "+p.getPosition().x+" "+p.getPosition().y+" moveTo:"+
+		//x+" "+y+" newCoordinate"+newCoordinate.x+" "+newCoordinate.y+"");
+		if(validCoordinate(newCoordinate)&&!gameObjects.containsKey(newCoordinate)){
 			gameObjects.remove(p.getPosition());
 			gameObjects.put(newCoordinate,p);
 			p.setPosition(newCoordinate.x,newCoordinate.y);
@@ -69,12 +78,14 @@ public class Game implements Serializable, Runnable{
 									p2.setAlive(false);
 									numberOfPlayersAlive--;
 									gameObjects.remove(p2.getPosition());
+									gameObjectsFromID.remove(p2.getGlobalIndex());
 								}
 							}
 						}else if(gameObjects.get(c) instanceof Food) {
 							Food f=(Food) gameObjects.get(c);
 							p.grow(f.getWeight());
 							gameObjects.remove(c);
+							gameObjectsFromID.remove(f.getGlobalIndex());
 							amountOfFood--;
 						}
 					}
@@ -91,8 +102,10 @@ public class Game implements Serializable, Runnable{
 		Coordinate c=getCoordinateForPlayer();
 		Player p=new Player(c.x,c.y,id);
 		numberOfPlayersAlive++;
+		p.setGlobalIndex(gameObjectIdexes++);
 		players.put(id, p);
 		gameObjects.put(p.getPosition(),p);
+		gameObjectsFromID.put(p.getGlobalIndex(),p);
 	}
 
 	private Coordinate getCoordinateForPlayer() {
@@ -113,6 +126,7 @@ public class Game implements Serializable, Runnable{
 			Iterator<Integer> it=players.keySet().iterator();
 			while(it.hasNext()) {
 				Player p=players.get(it.next());
+				//System.out.println(p.getPosition().x+" "+p.getPosition().y);
 				if(p.isAlive()) {
 					movePlayerToCoordinate(p.getId(),p.getDestination().x,p.getDestination().y);
 					if(!p.foundPrey()) {p.setIdOfPrey(-1);}else {p.setFoundPrey(false);}
@@ -128,6 +142,8 @@ public class Game implements Serializable, Runnable{
 	}
 
 	public void setPlayerMovingCoordinate(int id, int x, int y) {
-		players.get(id).setMovingCoordinate(x,y);
+		if(validCoordinate(new Coordinate(x,y))) {
+			players.get(id).setMovingCoordinate(x,y);			
+		}
 	}
 }

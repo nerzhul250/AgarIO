@@ -78,6 +78,7 @@ public class PlayerConnection implements Runnable {
 	
 	public void sendData(Object o) throws IOException {
         oos.writeObject(o);
+        oos.reset();
 	}
 
 	public int getId() {

@@ -17,6 +17,6 @@ public class Coordinate implements Serializable{
 	@Override
 	public boolean equals(Object obj) {
 		Coordinate co=(Coordinate)obj;
-		return x==co.x && y==co.y;
+		return (x==co.x && y==co.y);
 	}
 }

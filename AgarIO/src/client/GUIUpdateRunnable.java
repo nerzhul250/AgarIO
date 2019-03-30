@@ -2,12 +2,14 @@ package client;
 
 public class GUIUpdateRunnable implements Runnable{
 	private Controller controller;
-	public GUIUpdateRunnable(Controller c) {
+	private Object info;
+	public GUIUpdateRunnable(Controller c, Object info) {
 		controller=c;
+		this.info=info;
 	}
 	
 	@Override
 	public void run() {
-		controller.updateGUI();
+		controller.updateGUI(info);
 	}
 }

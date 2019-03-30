@@ -10,7 +10,7 @@ import java.io.IOException;
  */
 public class GameStateManager implements Runnable {
 	
-	public final static int REFRESHDELAY=40;
+	public final static int REFRESHDELAY=250;
 	
 	private GameHoster gamehoster;
 	
@@ -40,6 +40,7 @@ public class GameStateManager implements Runnable {
 			for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
 				gamehoster.getPlayerConnections().get(i).sendData(PlayerConnection.WAITMESSAGE);
 			}
+			
 			Thread.sleep(REFRESHDELAY);
 		 }
 		if(awaitCompleted) {
@@ -56,14 +57,18 @@ public class GameStateManager implements Runnable {
 
 	private void sendGameState() throws InterruptedException, IOException {
 		long startTime=System.currentTimeMillis();
+		System.out.println("SENDING GAMESTATE");
 		while(gamehoster.IsRunning()) {
 			if(System.currentTimeMillis()-startTime>300000) {break;}
-			Object o=gamehoster.getGame();
+			Object o[]=new Object[2];
+			o[0]=gamehoster.getGame().players;
+			o[1]=gamehoster.getGame().gameObjectsFromID;
 			for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
 				gamehoster.getPlayerConnections().get(i).sendData(o);
 			}
 			Thread.sleep(REFRESHDELAY);
 		}
+		System.out.println("STOP SENDING GAMESTATE");
 		for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
 			gamehoster.getPlayerConnections().get(i).sendData(PlayerConnection.FINALMESSAGE);
 		}

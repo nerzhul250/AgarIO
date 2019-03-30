@@ -5,12 +5,21 @@ import java.io.Serializable;
 
 public class GameObject implements Serializable{
 	
-	public final static double RADIUSCONSTANT=1;
+	public final static double RADIUSCONSTANT=5;
 	
+	private int globalIndex;
 	private Coordinate position;
 	private double weight;
 	private Color color;
 
+	
+	public int getGlobalIndex() {
+		return globalIndex;
+	}
+
+	public void setGlobalIndex(int globalIndex) {
+		this.globalIndex = globalIndex;
+	}
 	
 	public GameObject(int x, int y) {
 		position=new Coordinate(x,y);

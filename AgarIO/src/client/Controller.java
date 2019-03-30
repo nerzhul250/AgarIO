@@ -11,6 +11,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -18,6 +21,7 @@ import javax.net.ssl.SSLSocketFactory;
 import gameModel.Coordinate;
 import gameModel.Game;
 import gameModel.GameObject;
+import gameModel.Player;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -52,7 +56,7 @@ public class Controller implements Initializable{
 	
 	private Socket socketGame;
 	
-	private Game gameState;
+	private HashMap<Integer,Circle> circles;
 	
 	@FXML
 	private Pane gamePane;
@@ -215,6 +219,7 @@ public class Controller implements Initializable{
 	}
 	
 	public void openPane() {
+		circles=new HashMap<Integer,Circle>();
 		Parent root;
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/GamePanel.fxml"));
@@ -237,11 +242,8 @@ public class Controller implements Initializable{
 		double h=e.getSceneY();
 		double W=gamePane.getWidth();
 		double H=gamePane.getHeight();
-		System.out.println("Y");
 		try {
-			System.out.println("E");
 			transmitMovements.write(w+":"+h+":"+W+":"+H+"\n");
-			System.out.println("S");
 			transmitMovements.flush();
 		} catch (IOException e1) {
 			//TODO Auto-generated catch block
@@ -249,40 +251,71 @@ public class Controller implements Initializable{
 		}
 	}
 
-	public void updateGUI() {
-		gamePane.getChildren().clear();
+	public void updateGUI(Object infos) {
+		Object[] info=(Object[]) infos;
+		HashMap<Integer,Player> players=(HashMap<Integer, Player>) info[0];
+		HashMap<Integer,GameObject> gameObjects=(HashMap<Integer, GameObject>) info[1];
 		double W=gamePane.getWidth();
 		double H=gamePane.getHeight();
-		double x0=gameState.players.get(id).getPosition().x;
-		double y0=gameState.players.get(id).getPosition().y;
-		double r=gameState.players.get(id).getRadius();
+		double x0=players.get(id).getPosition().x;
+		double y0=players.get(id).getPosition().y;
+		double r=players.get(id).getRadius();
 		double X=2*r+Game.XPadding*2;
 		double Y=2*r+Game.YPadding*2;
-		for (int i = (int) (y0-(r+Game.YPadding)); i <= y0+r+Game.YPadding ; i++) {
-			for (int j = (int) (x0-(r+Game.XPadding)); j < x0+r+Game.XPadding; j++) {
-				if(gameState.gameObjects.containsKey(new Coordinate(j,i))) {
-					GameObject go=gameState.gameObjects.get(new Coordinate(j,i));
-					double w=(W/X)*j+(W/2)-(W/X)*x0;
-					double h=(H/Y)*i+(H/2)-(H/Y)*y0;
-					Circle c = new Circle((W/X)*go.getRadius(),new Color(go.getColor().getRed(),go.getColor().getGreen(),go.getColor().getBlue(),1));
-			    	c.setLayoutX(w);
-			    	c.setLayoutY(h);
-			    	gamePane.getChildren().add(c);
-				}
+		Iterator<Integer> it=gameObjects.keySet().iterator();
+		while(it.hasNext()) {
+			GameObject go=gameObjects.get(it.next());
+			double w=(W/X)*go.getPosition().x+(W/2)-(W/X)*x0;
+			double h=(H/Y)*go.getPosition().y+(H/2)-(H/Y)*y0;
+			if(circles.containsKey(go.getGlobalIndex())) {
+				circles.get(go.getGlobalIndex()).setLayoutX(w);
+				circles.get(go.getGlobalIndex()).setLayoutY(h);
+			}else {
+				Circle c = new Circle((W/X)*go.getRadius(),new Color(go.getColor().getRed()/256.0,go.getColor().getGreen()/256.0,go.getColor().getBlue()/256.0,1));
+				c.setLayoutX(w);
+				c.setLayoutY(h);
+				c.setRadius((W/X)*go.getRadius());
+				System.out.println("Circle Added!");
+				circles.put(go.getGlobalIndex(),c);
+				gamePane.getChildren().add(c);
 			}
+		}
+		Iterator<Integer> it2=circles.keySet().iterator();
+		ArrayList<Integer> toRemove=new ArrayList<Integer>();
+		while(it2.hasNext()) {
+			Integer tor=it2.next();
+			if(!gameObjects.containsKey(tor))toRemove.add(tor);
+		}
+		
+		for (int i = 0; i < toRemove.size(); i++) {
+			gamePane.getChildren().remove(circles.get(toRemove.get(i)));
+			circles.remove(toRemove.get(i));
 		}
 	}
 
-	public Object getMessage() throws IOException, ClassNotFoundException {
+	public Object getMessage() throws ClassNotFoundException, IOException{
+		try {
+			return receiveGame.readObject();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+			try {
+				receiveGame.readInt();
+				return receiveGame.readObject();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 		return receiveGame.readObject();
-	}
-
-	public void updateGame(Game info) {
-		gameState=info;
 	}
 
 	public void setId(int id2) {
 		id=id2;
 	}
-
 }

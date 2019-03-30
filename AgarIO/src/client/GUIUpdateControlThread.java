@@ -42,11 +42,10 @@ public class GUIUpdateControlThread extends Thread{
 					m="";
 				}
 				if(m.equals(PlayerConnection.FINALMESSAGE))break;
-				controller.updateGame((Game)info);
-				GUIUpdateRunnable gur = new GUIUpdateRunnable(controller);
+				GUIUpdateRunnable gur = new GUIUpdateRunnable(controller,info);
 				Platform.runLater(gur);
 				sleep(UPDATE_SLEEP_TIME);
-			} catch (InterruptedException | IOException | ClassNotFoundException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

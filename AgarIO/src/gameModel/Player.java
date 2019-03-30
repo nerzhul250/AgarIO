@@ -74,7 +74,7 @@ public class Player extends GameObject{
 	public Coordinate ComputeNewCoordinate(int x, int y) {
 		double deltax=x-getPosition().x;
 		double deltay=y-getPosition().y;
-		Coordinate c=new Coordinate((int)(deltax*MAGICALCONSTANT/getWeight()),(int)(deltay*MAGICALCONSTANT/getWeight()));
+		Coordinate c=new Coordinate((int)(deltax*MAGICALCONSTANT/getWeight())+getPosition().x,(int)(deltay*MAGICALCONSTANT/getWeight())+getPosition().y);
 		return c;
 	}
 }
