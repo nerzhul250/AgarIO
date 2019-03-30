@@ -3,6 +3,7 @@ package client;
 import java.awt.event.MouseMotionAdapter;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -27,6 +28,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -34,11 +36,21 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import registrationManagement.ClientAttendant;
 import registrationManagement.Server;
 
@@ -57,7 +69,7 @@ public class Controller implements Initializable{
 	
 	private Socket socketGame;
 	
-	private HashMap<Integer,Circle> circles;
+	private HashMap<Integer,GameObjectVisualComponent> gameObjects;
 	
 	@FXML
 	private Pane gamePane;
@@ -220,7 +232,7 @@ public class Controller implements Initializable{
 	}
 	
 	public void openPane() {
-		circles=new HashMap<Integer,Circle>();
+		gameObjects=new HashMap<Integer,GameObjectVisualComponent>();
 		Parent root;
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/GamePanel.fxml"));
@@ -234,7 +246,7 @@ public class Controller implements Initializable{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		System.out.println(gamePane==null);
+		gamePane.setBackground(new Background(new BackgroundFill(new Color(195/256.0,222/256.0,250/256.0,1),CornerRadii.EMPTY, Insets.EMPTY)));
 	}
 	
 	@FXML 
@@ -264,7 +276,7 @@ public class Controller implements Initializable{
 		int n=Integer.parseInt(splitted[3]);
 		HashSet<Integer> globalIndexes=new HashSet<Integer>();
 		for (int i = 0; i <n; i++) {
-			int index=i*5+4;
+			int index=i*6+4;
 			int globIndex=Integer.parseInt(splitted[index]);
 			globalIndexes.add(globIndex);
 			int x=Integer.parseInt(splitted[index+1]);
@@ -273,28 +285,35 @@ public class Controller implements Initializable{
 			double radius=Double.parseDouble(splitted[index+3]);
 			double w=(W/X)*x+(W/2)-(W/X)*x0;
 			double h=(H/Y)*y+(H/2)-(H/Y)*y0;
-			if(circles.containsKey(globIndex)) {
-				circles.get(globIndex).setLayoutX(w);
-				circles.get(globIndex).setLayoutY(h);
-				circles.get(globIndex).setRadius((W/X)*radius);
+			String name=splitted[index+5];
+			if(gameObjects.containsKey(globIndex)) {
+				gameObjects.get(globIndex).c.setLayoutX(w);
+				gameObjects.get(globIndex).c.setLayoutY(h);
+				gameObjects.get(globIndex).c.setRadius((W/X)*radius);
+				gameObjects.get(globIndex).name.setLayoutX(w-10-gameObjects.get(globIndex).name.getLayoutBounds().getMinX());
+				gameObjects.get(globIndex).name.setLayoutY(h-10-gameObjects.get(globIndex).name.getLayoutBounds().getMinY());
 			}else {
 				int basic=(1<<8)-1;
 				Circle c = new Circle((W/X)*radius,new Color((color&basic)/256.0,((color&(basic<<8))>>8)/256.0,((color&(basic<<16))>>16)/256.0,1));
 				c.setLayoutX(w);
 				c.setLayoutY(h);
-				circles.put(globIndex,c);
+				Text t=new Text(w,h,name);
+				GameObjectVisualComponent g=new GameObjectVisualComponent(globIndex, c,t);
+				gameObjects.put(globIndex,g);
 				gamePane.getChildren().add(c);
+				gamePane.getChildren().add(t);
 			}
 		}
-		Iterator<Integer> it2=circles.keySet().iterator();
+		Iterator<Integer> it2=gameObjects.keySet().iterator();
 		ArrayList<Integer> toRemove=new ArrayList<Integer>();
 		while(it2.hasNext()) {
 			Integer tor=it2.next();
 			if(!globalIndexes.contains(tor))toRemove.add(tor);
 		}
 		for (int i = 0; i < toRemove.size(); i++) {
-			gamePane.getChildren().remove(circles.get(toRemove.get(i)));
-			circles.remove(toRemove.get(i));
+			gamePane.getChildren().remove(gameObjects.get(toRemove.get(i)).c);
+			gamePane.getChildren().remove(gameObjects.get(toRemove.get(i)).name);
+			gameObjects.remove(toRemove.get(i));
 		}
 	}
 

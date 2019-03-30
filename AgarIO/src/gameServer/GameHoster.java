@@ -55,7 +55,7 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 
 	private void addPlayer(PlayerConnection pc) {
 		playerConnections.add(pc);
-		gameState.addNewPlayer(pc.getId());
+		gameState.addNewPlayer(pc.getId(),pc.getNickname());
 		(new Thread(pc)).start();
 		server.ReorderGameHoster(this);
 	}

@@ -11,8 +11,17 @@ public class GameObject implements Serializable{
 	private Coordinate position;
 	private double weight;
 	private Color color;
+	private String name;
 
 	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public int getGlobalIndex() {
 		return globalIndex;
 	}

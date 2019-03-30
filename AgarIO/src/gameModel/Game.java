@@ -47,6 +47,7 @@ public class Game implements Runnable{
 			}
 			Food f=new Food(c.x,c.y);
 			f.setGlobalIndex(gameObjectIdexes++);
+			f.setName(".");
 			gameObjectsFromID.put(f.getGlobalIndex(),f);
 			gameObjects.put(c,f);
 			amountOfFood++;
@@ -100,9 +101,10 @@ public class Game implements Runnable{
 		return c.x>=0 && c.y>=0 && c.x<=Xlength && c.y<=Ylength;
 	}
 
-	public void addNewPlayer(int id) {
+	public void addNewPlayer(int id,String name) {
 		Coordinate c=getCoordinateForPlayer();
 		Player p=new Player(c.x,c.y,id);
+		p.setName(name);
 		numberOfPlayersAlive++;
 		p.setGlobalIndex(gameObjectIdexes++);
 		players.put(id, p);
@@ -150,6 +152,8 @@ public class Game implements Runnable{
 				sb.append(go.getRadius());
 				sb.append(":");
 				sb.append(go.getColor().getRGB());
+				sb.append(":");
+				sb.append(go.getName());
 				sb.append(":");
 			}
 			objectsState=sb.toString();
