@@ -13,6 +13,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 
@@ -50,7 +51,7 @@ public class Controller implements Initializable{
 	
 	private BufferedWriter transmitMovements;
 	
-	private ObjectInputStream receiveGame;
+	private BufferedReader receiveGame;
 	
 	private Socket socketToLoginSystem;
 	
@@ -133,7 +134,7 @@ public class Controller implements Initializable{
 		try {
 			socketGame=new Socket(IP_DIRECTION,portGameHoster);
 			System.out.println("here");
-			receiveGame=new ObjectInputStream(socketGame.getInputStream());
+			receiveGame=new BufferedReader(new InputStreamReader(socketGame.getInputStream()));
 			System.out.println("here2");
 			transmitMovements=new BufferedWriter(new OutputStreamWriter(socketGame.getOutputStream()));
 			System.out.println("got"); 
@@ -251,32 +252,37 @@ public class Controller implements Initializable{
 		}
 	}
 
-	public void updateGUI(Object infos) {
-		Object[] info=(Object[]) infos;
-		HashMap<Integer,Player> players=(HashMap<Integer, Player>) info[0];
-		HashMap<Integer,GameObject> gameObjects=(HashMap<Integer, GameObject>) info[1];
+	public void updateGUI(String infos) {
+		String[] splitted=infos.substring(0,infos.length()-1).split(":");
 		double W=gamePane.getWidth();
 		double H=gamePane.getHeight();
-		double x0=players.get(id).getPosition().x;
-		double y0=players.get(id).getPosition().y;
-		double r=players.get(id).getRadius();
+		double x0=Double.parseDouble(splitted[0]);
+		double y0=Double.parseDouble(splitted[1]);
+		double r=Double.parseDouble(splitted[2]);
 		double X=2*r+Game.XPadding*2;
 		double Y=2*r+Game.YPadding*2;
-		Iterator<Integer> it=gameObjects.keySet().iterator();
-		while(it.hasNext()) {
-			GameObject go=gameObjects.get(it.next());
-			double w=(W/X)*go.getPosition().x+(W/2)-(W/X)*x0;
-			double h=(H/Y)*go.getPosition().y+(H/2)-(H/Y)*y0;
-			if(circles.containsKey(go.getGlobalIndex())) {
-				circles.get(go.getGlobalIndex()).setLayoutX(w);
-				circles.get(go.getGlobalIndex()).setLayoutY(h);
+		int n=Integer.parseInt(splitted[3]);
+		HashSet<Integer> globalIndexes=new HashSet<Integer>();
+		for (int i = 0; i <n; i++) {
+			int index=i*5+4;
+			int globIndex=Integer.parseInt(splitted[index]);
+			globalIndexes.add(globIndex);
+			int x=Integer.parseInt(splitted[index+1]);
+			int y=Integer.parseInt(splitted[index+2]);
+			int color=Integer.parseInt(splitted[index+4]);
+			double radius=Double.parseDouble(splitted[index+3]);
+			double w=(W/X)*x+(W/2)-(W/X)*x0;
+			double h=(H/Y)*y+(H/2)-(H/Y)*y0;
+			if(circles.containsKey(globIndex)) {
+				circles.get(globIndex).setLayoutX(w);
+				circles.get(globIndex).setLayoutY(h);
+				circles.get(globIndex).setRadius((W/X)*radius);
 			}else {
-				Circle c = new Circle((W/X)*go.getRadius(),new Color(go.getColor().getRed()/256.0,go.getColor().getGreen()/256.0,go.getColor().getBlue()/256.0,1));
+				int basic=(1<<8)-1;
+				Circle c = new Circle((W/X)*radius,new Color((color&basic)/256.0,((color&(basic<<8))>>8)/256.0,((color&(basic<<16))>>16)/256.0,1));
 				c.setLayoutX(w);
 				c.setLayoutY(h);
-				c.setRadius((W/X)*go.getRadius());
-				System.out.println("Circle Added!");
-				circles.put(go.getGlobalIndex(),c);
+				circles.put(globIndex,c);
 				gamePane.getChildren().add(c);
 			}
 		}
@@ -284,38 +290,20 @@ public class Controller implements Initializable{
 		ArrayList<Integer> toRemove=new ArrayList<Integer>();
 		while(it2.hasNext()) {
 			Integer tor=it2.next();
-			if(!gameObjects.containsKey(tor))toRemove.add(tor);
+			if(!globalIndexes.contains(tor))toRemove.add(tor);
 		}
-		
 		for (int i = 0; i < toRemove.size(); i++) {
 			gamePane.getChildren().remove(circles.get(toRemove.get(i)));
 			circles.remove(toRemove.get(i));
 		}
 	}
 
-	public Object getMessage() throws ClassNotFoundException, IOException{
-		try {
-			return receiveGame.readObject();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-			try {
-				receiveGame.readInt();
-				return receiveGame.readObject();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (ClassNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
-		return receiveGame.readObject();
+	public String getMessage() throws IOException {
+		return receiveGame.readLine();
 	}
 
 	public void setId(int id2) {
 		id=id2;
 	}
+
 }

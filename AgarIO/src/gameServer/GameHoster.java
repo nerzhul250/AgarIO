@@ -37,12 +37,11 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 	public void run() {
 		try {
 			(new Thread(new GameStateManager(this))).start();
-			System.out.println("SERVERDOWN1");
 			while(GameIsOpen()) {
-				System.out.println("SERVERDOWN");
+				System.out.println("SERVERUP");
 				PlayerConnection pc=new PlayerConnection(serverSocket.accept(),this,index++);
 				System.out.println(pc.getId());
-				pc.sendData(pc.getId());
+				pc.sendMessage(pc.getId()+"");
 				if(!IsGameFull()) {
 					addPlayer(pc);
 				}else {

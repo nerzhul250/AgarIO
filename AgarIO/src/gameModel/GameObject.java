@@ -24,8 +24,8 @@ public class GameObject implements Serializable{
 	public GameObject(int x, int y) {
 		position=new Coordinate(x,y);
 		color = new Color((int) (Math.random()*8388608));
-	}
 	
+	}
 	public Coordinate getPosition() {
 		return position;
 	}
@@ -34,8 +34,8 @@ public class GameObject implements Serializable{
 		return weight;
 	}
 	
-	public int getRadius() {
-		return (int) (Math.sqrt(getWeight()/Math.PI)*RADIUSCONSTANT);
+	public double getRadius() {
+		return Math.sqrt(getWeight()/Math.PI)*RADIUSCONSTANT;
 	}
 	
 	public void setWeight(double w) {

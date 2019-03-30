@@ -1,12 +1,14 @@
 package gameServer;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 import gameModel.Game;
@@ -16,11 +18,9 @@ public class PlayerConnection implements Runnable {
 	public final static String WAITMESSAGE="W";
 	public final static String RUNNINGMESSAGE="R";
 	public final static String FINALMESSAGE="F";	
-	
-	public final static int DELAY=100;
-	
+		
 	private Socket socket;
-	private ObjectOutputStream oos;
+	private BufferedWriter out;
 	private BufferedReader in;
 	
 	private GameHoster gameHoster;
@@ -30,7 +30,7 @@ public class PlayerConnection implements Runnable {
 	
 	public PlayerConnection(Socket accept, GameHoster gh,int id) throws IOException {
 		socket=accept;
-		oos=new ObjectOutputStream(socket.getOutputStream());
+		out=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 		in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		gameHoster=gh;
 		this.id=id;
@@ -63,7 +63,7 @@ public class PlayerConnection implements Runnable {
 	}
 
 	public void rejectConnection() throws IOException {
-		sendData(PlayerConnection.FINALMESSAGE);
+		sendMessage(PlayerConnection.FINALMESSAGE);
 	}
 	
 	public String getNickname() {
@@ -71,14 +71,20 @@ public class PlayerConnection implements Runnable {
 	}
 
 	public void setNickname() throws IOException {
-		System.out.println("USERRa");
 		nickname=in.readLine();
-		System.out.println("USERRd");
 	}
 	
-	public void sendData(Object o) throws IOException {
-        oos.writeObject(o);
-        oos.reset();
+	public void sendMessage(String m) throws IOException {
+		out.write(m+"\n");
+		out.flush();
+	}
+	
+	public void sendGameState(String data) throws IOException {
+		int x=gameHoster.getGame().players.get(id).getPosition().x;
+		int y=gameHoster.getGame().players.get(id).getPosition().y;
+		double r=gameHoster.getGame().players.get(id).getRadius();
+        out.write(x+":"+y+":"+r+":"+data+"\n");
+        out.flush();
 	}
 
 	public int getId() {

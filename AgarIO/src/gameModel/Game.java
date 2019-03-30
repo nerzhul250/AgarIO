@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 
 public class Game implements Runnable{
 	
-	public final static int REFRESHDELAY=250;
+	public final static int REFRESHDELAY=50;
 	
 	public final static int XPadding=100;
 	public final static int YPadding=100;
@@ -27,11 +27,13 @@ public class Game implements Runnable{
 	public HashMap<Coordinate,GameObject> gameObjects;
 	public HashMap<Integer,Player> players;
 	
+	private String objectsState;
 	
 	public Game() {
 		gameObjectsFromID=new HashMap<Integer,GameObject>();
 		gameObjects=new HashMap<Coordinate,GameObject>(); 
 		players=new HashMap<Integer,Player>();
+		objectsState="0:0:1:0:";
 	}
 
 	private void RandomizedFoodSpawning() {
@@ -61,8 +63,8 @@ public class Game implements Runnable{
 			gameObjects.put(newCoordinate,p);
 			p.setPosition(newCoordinate.x,newCoordinate.y);
 		}
-		for (int i = -p.getRadius(); i < p.getRadius(); i++) {
-			for (int j = -p.getRadius(); j < p.getRadius(); j++) {
+		for (int i = (int) -p.getRadius(); i < p.getRadius(); i++) {
+			for (int j = (int) -p.getRadius(); j < p.getRadius(); j++) {
 				Coordinate c=new Coordinate(p.getPosition().x+j,p.getPosition().y+i);
 				if(validCoordinate(c)) {
 					if(gameObjects.containsKey(c)) {
@@ -132,6 +134,25 @@ public class Game implements Runnable{
 					if(!p.foundPrey()) {p.setIdOfPrey(-1);}else {p.setFoundPrey(false);}
 				}
 			}
+			StringBuilder sb=new StringBuilder();
+			sb.append(gameObjects.size());
+			sb.append(":");
+			Coordinate[] coordinates=new Coordinate[1];
+			coordinates=gameObjects.keySet().toArray(coordinates);
+			for (int i = 0; i < coordinates.length; i++) {
+				GameObject go=gameObjects.get(coordinates[i]);
+				sb.append(go.getGlobalIndex());
+				sb.append(":");
+				sb.append(go.getPosition().x);
+				sb.append(":");
+				sb.append(go.getPosition().y);
+				sb.append(":");
+				sb.append(go.getRadius());
+				sb.append(":");
+				sb.append(go.getColor().getRGB());
+				sb.append(":");
+			}
+			objectsState=sb.toString();
 			try {
 				Thread.sleep(REFRESHDELAY);
 			} catch (InterruptedException e) {
@@ -145,5 +166,9 @@ public class Game implements Runnable{
 		if(validCoordinate(new Coordinate(x,y))) {
 			players.get(id).setMovingCoordinate(x,y);			
 		}
+	}
+
+	public String getObjectsState() {
+		return objectsState;		
 	}
 }

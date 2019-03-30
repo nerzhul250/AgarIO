@@ -4,7 +4,7 @@ import javafx.scene.paint.Color;
 
 public class Player extends GameObject{
 	
-	public final static double MAGICALCONSTANT=0.5;
+	public final static double MAGICALCONSTANT=4;
 	
 	private boolean foundPrey;
 	private boolean isAlive;
@@ -18,9 +18,9 @@ public class Player extends GameObject{
 		idOfPrey=-1;
 		foundPrey=false;
 		isAlive=true;
-		destination=new Coordinate(0,0);
+		destination=new Coordinate(getPosition().x,getPosition().y);
 		this.id=id;
-		setWeight(2);
+		setWeight(3);
 	}
 
 	public void setAlive(boolean b) {
@@ -71,10 +71,16 @@ public class Player extends GameObject{
 		destination.y=y;
 	}
 
-	public Coordinate ComputeNewCoordinate(int x, int y) {
+	public Coordinate ComputeNewCoordinate(int x, int y){
 		double deltax=x-getPosition().x;
 		double deltay=y-getPosition().y;
-		Coordinate c=new Coordinate((int)(deltax*MAGICALCONSTANT/getWeight())+getPosition().x,(int)(deltay*MAGICALCONSTANT/getWeight())+getPosition().y);
+		double norm=Math.sqrt(deltax*deltax+deltay*deltay);
+		deltax =deltax*MAGICALCONSTANT/(norm*getWeight());
+		deltay=deltay*MAGICALCONSTANT/(norm*getWeight());
+		int addx=0,addy=0;
+		if(deltax<0) {addx=-1;}else {addx=1;}
+		if(deltay<0) {addy=-1;}else {addy=1;}
+		Coordinate c=new Coordinate((int)(Math.round(deltax)+addx)+getPosition().x,(int)(Math.round(deltay)+addy)+getPosition().y);
 		return c;
 	}
 }

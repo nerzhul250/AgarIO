@@ -7,47 +7,31 @@ import gameServer.PlayerConnection;
 import javafx.application.Platform;
 
 public class GUIUpdateControlThread extends Thread{
-	private final static long UPDATE_SLEEP_TIME = 5;
 	private Controller controller;
+	
 	
 	public GUIUpdateControlThread(Controller c) {
 		controller=c;
 	}
 	
 	public void run() {
-		Object info;
 		try {
-			int id=(int) controller.getMessage();
+			String info="";
+			int id=Integer.parseInt(controller.getMessage());
 			controller.setId(id);
 			info = controller.getMessage();
-			String m=(String)info;
-			while(m.equals(PlayerConnection.WAITMESSAGE)) {sleep(UPDATE_SLEEP_TIME);m=(String)controller.getMessage();}
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		while (true) {
-			try {
+			String m=info;
+			while(m.equals(PlayerConnection.WAITMESSAGE)) {m=controller.getMessage();}
+			while (true) {
+				Thread.sleep(50);
 				info=controller.getMessage();
-				String m;
-				try {
-					m=(String)info;					
-				}catch(Exception e) {
-					m="";
-				}
 				if(m.equals(PlayerConnection.FINALMESSAGE))break;
 				GUIUpdateRunnable gur = new GUIUpdateRunnable(controller,info);
 				Platform.runLater(gur);
-				sleep(UPDATE_SLEEP_TIME);
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
+		}catch(Exception e){
+			e.printStackTrace();
 		}
+		
 	}
 }

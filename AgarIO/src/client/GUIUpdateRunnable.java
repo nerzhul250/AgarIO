@@ -2,8 +2,8 @@ package client;
 
 public class GUIUpdateRunnable implements Runnable{
 	private Controller controller;
-	private Object info;
-	public GUIUpdateRunnable(Controller c, Object info) {
+	private String info;
+	public GUIUpdateRunnable(Controller c, String info) {
 		controller=c;
 		this.info=info;
 	}
