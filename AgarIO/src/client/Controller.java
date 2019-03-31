@@ -59,6 +59,8 @@ public class Controller implements Initializable{
 	
 	private HashMap<Integer,GameObjectVisualComponent> gameObjects;
 	
+	private ArrayList<Text> podium;
+	
 	@FXML
 	private Pane gamePane;
 	
@@ -217,7 +219,6 @@ public class Controller implements Initializable{
 	}
 	
 	public void openPane() {
-		gameObjects=new HashMap<Integer,GameObjectVisualComponent>();
 		Parent root;
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(GAMEPANELOCATION));
@@ -232,6 +233,10 @@ public class Controller implements Initializable{
 			e1.printStackTrace();
 		}
 		gamePane.setBackground(new Background(new BackgroundFill(new Color(195/256.0,222/256.0,250/256.0,1),CornerRadii.EMPTY, Insets.EMPTY)));
+		gameObjects=new HashMap<Integer,GameObjectVisualComponent>();
+		podium=new ArrayList<Text>();
+		podium.add(new Text(gamePane.getWidth()-100,15,"TOP"));
+		gamePane.getChildren().add(podium.get(0));
 	}
 	
 	@FXML 
@@ -287,6 +292,19 @@ public class Controller implements Initializable{
 				gameObjects.put(globIndex,g);
 				gamePane.getChildren().add(c);
 				gamePane.getChildren().add(t);
+			}
+		}
+		int podiumSize=Integer.parseInt(splitted[(n-1)*6+10]);
+		podium.get(0).setLayoutX(gamePane.getWidth()-100-podium.get(0).getLayoutBounds().getMinX());
+		podium.get(0).setLayoutY(15-podium.get(0).getLayoutBounds().getMinY());
+		for (int i = 0; i < podiumSize; i++) {
+			if(podium.size()<2+i) {
+				podium.add(new Text(gamePane.getWidth()-100,30+i*15,splitted[(n-1)*6+11+i]));
+				gamePane.getChildren().add(podium.get(i+1));
+			}else {
+				podium.get(i+1).setText(splitted[(n-1)*6+11+i]);
+				podium.get(i+1).setLayoutX(gamePane.getWidth()-100-podium.get(i+1).getLayoutBounds().getMinX());
+				podium.get(i+1).setLayoutY(30+i*15-podium.get(i+1).getLayoutBounds().getMinY());
 			}
 		}
 		Iterator<Integer> it2=gameObjects.keySet().iterator();

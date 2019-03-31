@@ -1,8 +1,6 @@
 package client;
 
-import java.io.IOException;
 
-import gameModel.Game;
 import gameServer.PlayerConnection;
 import javafx.application.Platform;
 import registrationManagement.Server;

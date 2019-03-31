@@ -1,5 +1,7 @@
 package gameModel;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -12,6 +14,7 @@ public class Game implements Runnable{
 	public final static int Xlength=1000;
 	public final static int Ylength=1000;
 	public final static int MAXFOODNUMBER=100;
+	public final static int PODIUMSIZE=3;
 	
 	private int gameObjectIdexes;
 	
@@ -26,7 +29,7 @@ public class Game implements Runnable{
 	public Game() {
 		gameObjects=new HashMap<Coordinate,GameObject>(); 
 		players=new HashMap<Integer,Player>();
-		objectsState="0:0:1:0:";
+		objectsState="0:0:1:0:0:";
 	}
 
 	private void RandomizedFoodSpawning() {
@@ -123,27 +126,7 @@ public class Game implements Runnable{
 					if(!p.foundPrey()) {p.setIdOfPrey(-1);}else {p.setFoundPrey(false);}
 				}
 			}
-			StringBuilder sb=new StringBuilder();
-			sb.append(gameObjects.size());
-			sb.append(":");
-			Coordinate[] coordinates=new Coordinate[1];
-			coordinates=gameObjects.keySet().toArray(coordinates);
-			for (int i = 0; i < coordinates.length; i++) {
-				GameObject go=gameObjects.get(coordinates[i]);
-				sb.append(go.getGlobalIndex());
-				sb.append(":");
-				sb.append(go.getPosition().x);
-				sb.append(":");
-				sb.append(go.getPosition().y);
-				sb.append(":");
-				sb.append(go.getRadius());
-				sb.append(":");
-				sb.append(go.getColor().getRGB());
-				sb.append(":");
-				sb.append(go.getName());
-				sb.append(":");
-			}
-			objectsState=sb.toString();
+			setUpTransferableGame();
 			try {
 				Thread.sleep(Server.GAMEPACE);
 			} catch (InterruptedException e) {
@@ -151,6 +134,37 @@ public class Game implements Runnable{
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void setUpTransferableGame() {
+		StringBuilder sb=new StringBuilder();
+		sb.append(gameObjects.size());
+		sb.append(":");
+		Coordinate[] coordinates=new Coordinate[1];
+		coordinates=gameObjects.keySet().toArray(coordinates);
+		for (int i = 0; i < coordinates.length; i++) {
+			GameObject go=gameObjects.get(coordinates[i]);
+			sb.append(go.getGlobalIndex());
+			sb.append(":");
+			sb.append(go.getPosition().x);
+			sb.append(":");
+			sb.append(go.getPosition().y);
+			sb.append(":");
+			sb.append(go.getRadius());
+			sb.append(":");
+			sb.append(go.getColor().getRGB());
+			sb.append(":");
+			sb.append(go.getName());
+			sb.append(":");
+		}
+		ArrayList<Player> podium=getPodium();
+		sb.append(PODIUMSIZE<podium.size()?PODIUMSIZE:podium.size());
+		sb.append(":");
+		for (int i = 0; i < PODIUMSIZE && i<podium.size(); i++) {
+			sb.append(podium.get(podium.size()-i-1).getName());
+			sb.append(":");
+		}
+		objectsState=sb.toString();
 	}
 
 	public void setPlayerMovingCoordinate(int id, int x, int y) {
@@ -163,17 +177,20 @@ public class Game implements Runnable{
 		return objectsState;		
 	}
 
-	public int getGreatestScorer() {
+	public ArrayList<Player> getPodium(){
 		Integer[] indexes=new Integer[1];
 		indexes=players.keySet().toArray(indexes);
-		int index=-1;
-		int score=0;
+		ArrayList<Player> podium=new ArrayList<Player>();
 		for (int i = 0; i < indexes.length; i++) {
-			if(players.get(indexes[i])!=null &&players.get(indexes[i]).getWeight()>score && players.get(indexes[i]).isAlive() ) {
-				score=(int) players.get(indexes[i]).getWeight();
-				index=indexes[i];
+			if(players.get(indexes[i])!=null &&players.get(indexes[i]).isAlive() ) {
+				podium.add(players.get(indexes[i]));
 			}
 		}
-		return index;
+		Collections.sort(podium);
+		return podium;
+	}
+	public int getGreatestScorer() {
+		ArrayList<Player> podium=getPodium();
+		return podium.get(podium.size()-1).getId();
 	}
 }
