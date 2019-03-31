@@ -1,9 +1,8 @@
 package gameModel;
 
 import java.awt.Color;
-import java.io.Serializable;
 
-public class GameObject implements Serializable{
+public class GameObject{
 	
 	public final static double RADIUSCONSTANT=5;
 	

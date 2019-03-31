@@ -1,16 +1,11 @@
 package gameModel;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javafx.scene.paint.Color;
+import registrationManagement.Server;
 
 public class Game implements Runnable{
-	
-	public final static int REFRESHDELAY=50;
-	
 	public final static int XPadding=100;
 	public final static int YPadding=100;
 	
@@ -54,8 +49,6 @@ public class Game implements Runnable{
 	public void movePlayerToCoordinate(int id, int x, int y) {
 		Player p=players.get(id);
 		Coordinate newCoordinate=p.ComputeNewCoordinate(x,y);
-		//System.out.println("pos: "+p.getPosition().x+" "+p.getPosition().y+" moveTo:"+
-		//x+" "+y+" newCoordinate"+newCoordinate.x+" "+newCoordinate.y+"");
 		if(validCoordinate(newCoordinate)&&!gameObjects.containsKey(newCoordinate)){
 			gameObjects.remove(p.getPosition());
 			gameObjects.put(newCoordinate,p);
@@ -152,7 +145,7 @@ public class Game implements Runnable{
 			}
 			objectsState=sb.toString();
 			try {
-				Thread.sleep(REFRESHDELAY);
+				Thread.sleep(Server.GAMEPACE);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -171,7 +164,7 @@ public class Game implements Runnable{
 	}
 
 	public int getGreatestScorer() {
-		Integer[] indexes=new Integer[4];
+		Integer[] indexes=new Integer[1];
 		indexes=players.keySet().toArray(indexes);
 		int index=-1;
 		int score=0;

@@ -1,8 +1,7 @@
 package gameModel;
 
-import java.io.Serializable;
 
-public class Coordinate implements Serializable{
+public class Coordinate{
    	public int x;
 	public int y;
 	public Coordinate(int x, int y) {

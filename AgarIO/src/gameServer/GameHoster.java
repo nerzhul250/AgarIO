@@ -43,7 +43,6 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 				System.out.println("SERVERUP");
 				PlayerConnection pc=new PlayerConnection(serverSocket.accept(),this,index++);
 				System.out.println(pc.getId());
-				pc.sendMessage(pc.getId()+"");
 				if(!IsGameFull()) {
 					addPlayer(pc);
 				}else {
@@ -64,7 +63,7 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 	}
 
 	public boolean IsGameFull() {
-		return playerConnections.size()==max_player_number || System.currentTimeMillis()-gameStartTime>=120000;
+		return playerConnections.size()==max_player_number || System.currentTimeMillis()-gameStartTime>=Server.MAXWAITTIME;
 	}
 
 	private boolean GameIsOpen() {

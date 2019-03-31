@@ -1,17 +1,13 @@
 package client;
 
-import java.awt.event.MouseMotionAdapter;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,10 +16,7 @@ import java.util.ResourceBundle;
 
 import javax.net.ssl.SSLSocketFactory;
 
-import gameModel.Coordinate;
 import gameModel.Game;
-import gameModel.GameObject;
-import gameModel.Player;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -36,19 +29,12 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import registrationManagement.ClientAttendant;
@@ -56,10 +42,12 @@ import registrationManagement.Server;
 
 public class Controller implements Initializable{
 
-	public static String IP_DIRECTION = "localhost";
+	public static final String IP_DIRECTION = "localhost";
 	public static final String TRUSTTORE_LOCATION = "./keyStore/keystore.jks";
+	public static final String LOGINPANELOCATION="/view/Login.fxml";
+	public static final String REGISTERPANELOCATION="/view/Register.fxml";
+	public static final String GAMEPANELOCATION="/view/GamePanel.fxml";
 	
-	private int id;
 	
 	private BufferedWriter transmitMovements;
 	
@@ -145,14 +133,11 @@ public class Controller implements Initializable{
 	private void startGame(int portGameHoster, String nickname) {
 		try {
 			socketGame=new Socket(IP_DIRECTION,portGameHoster);
-			System.out.println("here");
 			receiveGame=new BufferedReader(new InputStreamReader(socketGame.getInputStream()));
-			System.out.println("here2");
 			transmitMovements=new BufferedWriter(new OutputStreamWriter(socketGame.getOutputStream()));
-			System.out.println("got"); 
 			transmitMovements.write(nickname+"\n");
 			transmitMovements.flush();
-			System.out.println("got2");
+			System.out.println("GameStarting");
 			new GUIUpdateControlThread(this).start();
 			Thread.sleep(2000);
 		} catch (InterruptedException | IOException e1) {
@@ -220,7 +205,7 @@ public class Controller implements Initializable{
 	public void changeFrame(ActionEvent e) {
 		Parent root;
 		try {
-			root = FXMLLoader.load(getClass().getResource("/view/Register.fxml"));
+			root = FXMLLoader.load(getClass().getResource(REGISTERPANELOCATION));
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
 			stage.setScene(scene);
@@ -235,7 +220,7 @@ public class Controller implements Initializable{
 		gameObjects=new HashMap<Integer,GameObjectVisualComponent>();
 		Parent root;
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/GamePanel.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(GAMEPANELOCATION));
 			loader.setController(this);
 			root = loader.load();
 			Scene scene = new Scene(root);
@@ -319,10 +304,6 @@ public class Controller implements Initializable{
 
 	public String getMessage() throws IOException {
 		return receiveGame.readLine();
-	}
-
-	public void setId(int id2) {
-		id=id2;
 	}
 
 	public void showWinMessage(String info) {

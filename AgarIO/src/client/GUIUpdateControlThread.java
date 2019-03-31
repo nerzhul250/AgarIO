@@ -5,6 +5,7 @@ import java.io.IOException;
 import gameModel.Game;
 import gameServer.PlayerConnection;
 import javafx.application.Platform;
+import registrationManagement.Server;
 
 public class GUIUpdateControlThread extends Thread{
 	private Controller controller;
@@ -17,12 +18,10 @@ public class GUIUpdateControlThread extends Thread{
 	public void run() {
 		try {
 			String info="";
-			int id=Integer.parseInt(controller.getMessage());
-			controller.setId(id);
 			info = controller.getMessage();
 			while(info.equals(PlayerConnection.WAITMESSAGE)) {info=controller.getMessage();}
 			while (true) {
-				Thread.sleep(50);
+				Thread.sleep(Server.GAMEPACE);
 				info=controller.getMessage();
 				if(info.equals(PlayerConnection.FINALMESSAGE))break;
 				GUIUpdateRunnable gur = new GUIUpdateRunnable(controller,info,1);

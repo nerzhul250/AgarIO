@@ -1,10 +1,10 @@
 package gameModel;
 
-import javafx.scene.paint.Color;
 
 public class Player extends GameObject{
 	
-	public final static double MAGICALCONSTANT=4;
+	public final static double VELOCITYCONSTANT=10;
+	public final static double INITIALWEIGHT=3;
 	
 	private boolean foundPrey;
 	private boolean isAlive;
@@ -20,7 +20,7 @@ public class Player extends GameObject{
 		isAlive=true;
 		destination=new Coordinate(getPosition().x,getPosition().y);
 		this.id=id;
-		setWeight(3);
+		setWeight(INITIALWEIGHT);
 	}
 
 	public void setAlive(boolean b) {
@@ -75,12 +75,14 @@ public class Player extends GameObject{
 		double deltax=x-getPosition().x;
 		double deltay=y-getPosition().y;
 		double norm=Math.sqrt(deltax*deltax+deltay*deltay);
-		deltax =deltax*MAGICALCONSTANT/(norm*getWeight());
-		deltay=deltay*MAGICALCONSTANT/(norm*getWeight());
-		int addx=0,addy=0;
-		if(deltax<0) {addx=-1;}else {addx=1;}
-		if(deltay<0) {addy=-1;}else {addy=1;}
-		Coordinate c=new Coordinate((int)(Math.round(deltax)+addx)+getPosition().x,(int)(Math.round(deltay)+addy)+getPosition().y);
+		Coordinate c=null;
+		if(norm<=getRadius()) {
+			c=new Coordinate(getPosition().x,getPosition().y);
+		}else {
+			double odeltay=deltay*VELOCITYCONSTANT/(norm*Math.log(getWeight()));
+			double odeltax =deltax*VELOCITYCONSTANT/(norm*Math.log(getWeight()));
+			c=new Coordinate((int)(Math.round(odeltax)+deltax/norm)+getPosition().x,(int)(Math.round(odeltay)+deltay/norm)+getPosition().y);			
+		}
 		return c;
 	}
 }

@@ -4,19 +4,17 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import gameModel.Coordinate;
+import gameModel.Game;
 import gameModel.GameObject;
 import gameModel.Player;
+import registrationManagement.Server;
 
 /**
  * Thread in charge of multicasting the current gameState to all connectedPlayers in
  * a gameHoster
  * @author Usuario
- *
  */
 public class GameStateManager implements Runnable {
-	
-	public final static int REFRESHDELAY=50;
-	
 	private GameHoster gamehoster;
 	
 	public GameStateManager(GameHoster gamehoster) {
@@ -41,12 +39,12 @@ public class GameStateManager implements Runnable {
 		boolean awaitCompleted=true;
 		long startTime=System.currentTimeMillis();
 		while(!gamehoster.IsRunning()) {
-			if(System.currentTimeMillis()-startTime>120000) {awaitCompleted=false;break;}
+			if(System.currentTimeMillis()-startTime>Server.MAXWAITTIME) {awaitCompleted=false;break;}
 			for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
 				gamehoster.getPlayerConnections().get(i).sendMessage(PlayerConnection.WAITMESSAGE);
 			}
 			
-			Thread.sleep(REFRESHDELAY);
+			Thread.sleep(Server.GAMEPACE);
 		 }
 		if(awaitCompleted) {
 			for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
@@ -66,7 +64,7 @@ public class GameStateManager implements Runnable {
 		long startTime=System.currentTimeMillis();
 		System.out.println("SENDING GAMESTATE");
 		while(gamehoster.IsRunning()) {
-			if(System.currentTimeMillis()-startTime>300000) {break;}
+			if(System.currentTimeMillis()-startTime>Server.MAXPLAYTIME) {break;}
 			for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
 				gamehoster.getPlayerConnections().get(i).sendGameState(gamehoster.getGame().getObjectsState());
 				if(!gamehoster.getGame().players.get(gamehoster.getPlayerConnections().get(i).getId()).isAlive()) {
@@ -75,7 +73,7 @@ public class GameStateManager implements Runnable {
 					con.sendFinalMessage(PlayerConnection.FINALMESSAGE,PlayerConnection.LOSTMESSAGE,"Te han comido");
 				}
 			}
-			Thread.sleep(REFRESHDELAY);
+			Thread.sleep(Server.GAMEPACE);
 		}
 		System.out.println("STOP SENDING GAMESTATE");
 		for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {

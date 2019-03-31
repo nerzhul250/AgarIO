@@ -16,9 +16,13 @@ import gameServer.GameHoster;
 public class Server {
 
 	public static final int PORT_RECEIVE =8000;
+	
 	public static final int MAXPLAYERNUM=5;
-	public static final int MAXGAMEHOSTERSNUM=1;
 	public static final int MINPLAYERNUM=2;
+	public static final int MAXGAMEHOSTERSNUM=1;
+	public static final long MAXWAITTIME=120000;
+	public static final long MAXPLAYTIME=300000;
+	public static final long GAMEPACE=50;
 	
 	public static final String KEYSTORE_LOCATION = "./keyStore/keystore.jks";
 	public static final String KEYSTORE_PASSWORD = "shwq1998";
