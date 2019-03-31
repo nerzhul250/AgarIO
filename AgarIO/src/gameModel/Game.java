@@ -1,6 +1,8 @@
 package gameModel;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -123,7 +125,7 @@ public class Game implements Runnable{
 				//System.out.println(p.getPosition().x+" "+p.getPosition().y);
 				if(p.isAlive()) {
 					movePlayerToCoordinate(p.getId(),p.getDestination().x,p.getDestination().y);
-					if(!p.foundPrey()) {p.setIdOfPrey(-1);}else {p.setFoundPrey(false);}
+					if(!p.foundPrey()) p.setIdOfPrey(-1);else p.setFoundPrey(false);
 				}
 			}
 			setUpTransferableGame();
@@ -140,10 +142,11 @@ public class Game implements Runnable{
 		StringBuilder sb=new StringBuilder();
 		sb.append(gameObjects.size());
 		sb.append(":");
-		Coordinate[] coordinates=new Coordinate[1];
-		coordinates=gameObjects.keySet().toArray(coordinates);
-		for (int i = 0; i < coordinates.length; i++) {
-			GameObject go=gameObjects.get(coordinates[i]);
+		GameObject[] gameObject=new GameObject[1];
+		gameObject=gameObjects.values().toArray(gameObject);
+		Arrays.sort(gameObject);
+		for (int i = 0; i < gameObject.length; i++) {
+			GameObject go = gameObject[i];
 			sb.append(go.getGlobalIndex());
 			sb.append(":");
 			sb.append(go.getPosition().x);

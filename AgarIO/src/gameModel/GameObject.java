@@ -2,7 +2,7 @@ package gameModel;
 
 import java.awt.Color;
 
-public class GameObject{
+public class GameObject implements Comparable<GameObject>{
 	
 	public final static double RADIUSCONSTANT=5;
 	
@@ -56,5 +56,12 @@ public class GameObject{
 
 	public Color getColor() {
 		return color;
+	}
+
+	@Override
+	public int compareTo(GameObject o) {
+		Integer one=(int) getWeight();
+		Integer two=(int)o.getWeight();
+		return one.compareTo(two);
 	}
 }

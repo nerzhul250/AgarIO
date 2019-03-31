@@ -277,12 +277,15 @@ public class Controller implements Initializable{
 			double h=(H/Y)*y+(H/2)-(H/Y)*y0;
 			String name=splitted[index+5];
 			if(gameObjects.containsKey(globIndex)) {
-				gameObjects.get(globIndex).c.setLayoutX(w);
-				gameObjects.get(globIndex).c.setLayoutY(h);
-				gameObjects.get(globIndex).c.setRadius((W/X)*radius);
-				gameObjects.get(globIndex).name.setLayoutX(w-10-gameObjects.get(globIndex).name.getLayoutBounds().getMinX());
-				gameObjects.get(globIndex).name.setLayoutY(h-10-gameObjects.get(globIndex).name.getLayoutBounds().getMinY());
-			}else {
+				gamePane.getChildren().remove(gameObjects.get(globIndex).c);
+				gamePane.getChildren().remove(gameObjects.get(globIndex).name);
+//				gameObjects.get(globIndex).c.setLayoutX(w);
+//				gameObjects.get(globIndex).c.setLayoutY(h);
+//				gameObjects.get(globIndex).c.setRadius((W/X)*radius);
+//				gameObjects.get(globIndex).name.setLayoutX(w-10-gameObjects.get(globIndex).name.getLayoutBounds().getMinX());
+//				gameObjects.get(globIndex).name.setLayoutY(h-10-gameObjects.get(globIndex).name.getLayoutBounds().getMinY());
+			}
+//			else {
 				int basic=(1<<8)-1;
 				Circle c = new Circle((W/X)*radius,new Color((color&basic)/256.0,((color&(basic<<8))>>8)/256.0,((color&(basic<<16))>>16)/256.0,1));
 				c.setLayoutX(w);
@@ -292,7 +295,7 @@ public class Controller implements Initializable{
 				gameObjects.put(globIndex,g);
 				gamePane.getChildren().add(c);
 				gamePane.getChildren().add(t);
-			}
+//			}
 		}
 		int podiumSize=Integer.parseInt(splitted[(n-1)*6+10]);
 		podium.get(0).setLayoutX(gamePane.getWidth()-100-podium.get(0).getLayoutBounds().getMinX());

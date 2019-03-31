@@ -1,7 +1,7 @@
 package gameModel;
 
 
-public class Player extends GameObject implements Comparable<Player>{
+public class Player extends GameObject{
 	
 	public final static double VELOCITYCONSTANT=10;
 	public final static double INITIALWEIGHT=3;
@@ -86,10 +86,4 @@ public class Player extends GameObject implements Comparable<Player>{
 		return c;
 	}
 
-	@Override
-	public int compareTo(Player arg0) {
-		Integer one=(int) getWeight();
-		Integer two=(int)arg0.getWeight();
-		return one.compareTo(two);
-	}
 }
