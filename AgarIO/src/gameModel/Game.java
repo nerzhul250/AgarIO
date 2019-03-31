@@ -23,14 +23,12 @@ public class Game implements Runnable{
 	private int numberOfPlayersAlive;
 	private int amountOfFood;
 	
-	public HashMap<Integer,GameObject> gameObjectsFromID;
 	public HashMap<Coordinate,GameObject> gameObjects;
 	public HashMap<Integer,Player> players;
 	
 	private String objectsState;
 	
 	public Game() {
-		gameObjectsFromID=new HashMap<Integer,GameObject>();
 		gameObjects=new HashMap<Coordinate,GameObject>(); 
 		players=new HashMap<Integer,Player>();
 		objectsState="0:0:1:0:";
@@ -48,7 +46,6 @@ public class Game implements Runnable{
 			Food f=new Food(c.x,c.y);
 			f.setGlobalIndex(gameObjectIdexes++);
 			f.setName(".");
-			gameObjectsFromID.put(f.getGlobalIndex(),f);
 			gameObjects.put(c,f);
 			amountOfFood++;
 		}
@@ -81,14 +78,12 @@ public class Game implements Runnable{
 									p2.setAlive(false);
 									numberOfPlayersAlive--;
 									gameObjects.remove(p2.getPosition());
-									gameObjectsFromID.remove(p2.getGlobalIndex());
 								}
 							}
 						}else if(gameObjects.get(c) instanceof Food) {
 							Food f=(Food) gameObjects.get(c);
 							p.grow(f.getWeight());
 							gameObjects.remove(c);
-							gameObjectsFromID.remove(f.getGlobalIndex());
 							amountOfFood--;
 						}
 					}
@@ -109,7 +104,6 @@ public class Game implements Runnable{
 		p.setGlobalIndex(gameObjectIdexes++);
 		players.put(id, p);
 		gameObjects.put(p.getPosition(),p);
-		gameObjectsFromID.put(p.getGlobalIndex(),p);
 	}
 
 	private Coordinate getCoordinateForPlayer() {
@@ -174,5 +168,19 @@ public class Game implements Runnable{
 
 	public String getObjectsState() {
 		return objectsState;		
+	}
+
+	public int getGreatestScorer() {
+		Integer[] indexes=new Integer[4];
+		indexes=players.keySet().toArray(indexes);
+		int index=-1;
+		int score=0;
+		for (int i = 0; i < indexes.length; i++) {
+			if(players.get(indexes[i])!=null &&players.get(indexes[i]).getWeight()>score && players.get(indexes[i]).isAlive() ) {
+				score=(int) players.get(indexes[i]).getWeight();
+				index=indexes[i];
+			}
+		}
+		return index;
 	}
 }

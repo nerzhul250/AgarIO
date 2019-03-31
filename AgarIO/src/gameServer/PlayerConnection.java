@@ -15,9 +15,12 @@ import gameModel.Game;
 
 public class PlayerConnection implements Runnable {
 	
-	public final static String WAITMESSAGE="W";
+	public final static String WAITMESSAGE="WA";
 	public final static String RUNNINGMESSAGE="R";
-	public final static String FINALMESSAGE="F";	
+	public final static String FINALMESSAGE="F";
+	public final static String LOSTMESSAGE="L";
+	public final static String WINMESSAGE="WI";
+	
 		
 	private Socket socket;
 	private BufferedWriter out;
@@ -62,8 +65,10 @@ public class PlayerConnection implements Runnable {
 		}
 	}
 
-	public void rejectConnection() throws IOException {
-		sendMessage(PlayerConnection.FINALMESSAGE);
+	public void sendFinalMessage(String m1,String m2,String m3) throws IOException {
+		sendMessage(m1);
+		sendMessage(m2);
+		sendMessage(m3);
 	}
 	
 	public String getNickname() {

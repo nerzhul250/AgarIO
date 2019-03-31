@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import gameModel.Coordinate;
 import gameModel.GameObject;
+import gameModel.Player;
 
 /**
  * Thread in charge of multicasting the current gameState to all connectedPlayers in
@@ -55,7 +56,9 @@ public class GameStateManager implements Runnable {
 		}else {
 			for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
 				gamehoster.getPlayerConnections().get(i).sendMessage(PlayerConnection.FINALMESSAGE);
+				gamehoster.getPlayerConnections().get(i).sendFinalMessage(PlayerConnection.FINALMESSAGE,PlayerConnection.FINALMESSAGE,"you are off");
 			}
+			gamehoster.powerOff();
 		}
 	}
 
@@ -66,12 +69,23 @@ public class GameStateManager implements Runnable {
 			if(System.currentTimeMillis()-startTime>300000) {break;}
 			for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
 				gamehoster.getPlayerConnections().get(i).sendGameState(gamehoster.getGame().getObjectsState());
+				if(!gamehoster.getGame().players.get(gamehoster.getPlayerConnections().get(i).getId()).isAlive()) {
+					PlayerConnection con=gamehoster.getPlayerConnections().remove(i);
+					i--;
+					con.sendFinalMessage(PlayerConnection.FINALMESSAGE,PlayerConnection.LOSTMESSAGE,"Te han comido");
+				}
 			}
 			Thread.sleep(REFRESHDELAY);
 		}
 		System.out.println("STOP SENDING GAMESTATE");
 		for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
-			gamehoster.getPlayerConnections().get(i).sendMessage(PlayerConnection.FINALMESSAGE);
+			if(gamehoster.getGame().getGreatestScorer()==gamehoster.getPlayerConnections().get(i).getId()) {
+				gamehoster.getPlayerConnections().get(i).sendFinalMessage(PlayerConnection.FINALMESSAGE,PlayerConnection.WINMESSAGE,
+						"El ganador ha sido "+gamehoster.getPlayerConnections().get(i).getNickname());	
+			}else {
+				gamehoster.getPlayerConnections().get(i).sendFinalMessage(PlayerConnection.FINALMESSAGE,PlayerConnection.LOSTMESSAGE,
+						"El ganador ha sido "+gamehoster.getPlayerConnections().get(gamehoster.getGame().getGreatestScorer()).getNickname());								
+			}
 		}
 		gamehoster.powerOff();
 	}

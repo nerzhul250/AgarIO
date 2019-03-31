@@ -325,4 +325,28 @@ public class Controller implements Initializable{
 		id=id2;
 	}
 
+	public void showWinMessage(String info) {
+		Alert al = new Alert(AlertType.WARNING);
+		al.setTitle("Se termino el juego");
+		al.setHeaderText("Ganaste");
+		al.setContentText(info);
+		al.showAndWait();
+	}
+
+	public void showLoseMessage(String info) {
+		Alert al = new Alert(AlertType.WARNING);
+		al.setTitle("Se termino el juego");
+		al.setHeaderText("Perdiste");
+		al.setContentText(info);
+		al.showAndWait();
+	}
+
+	public void showDisconnectMessage(String info) {
+		Alert al = new Alert(AlertType.WARNING);
+		al.setTitle("Conexion rechazada");
+		al.setHeaderText("Tu conexion fue rechazada");
+		al.setContentText(info);
+		al.showAndWait();
+	}
+
 }

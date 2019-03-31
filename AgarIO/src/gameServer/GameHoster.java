@@ -10,6 +10,7 @@ import registrationManagement.Server;
 public class GameHoster implements Runnable, Comparable<GameHoster> {
 	private int max_player_number;
 	private int min_player_number;
+	private long gameStartTime;
 	private int index;
 	
 	private boolean gameIsOpen;
@@ -35,6 +36,7 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 	
 	@Override
 	public void run() {
+		gameStartTime=System.currentTimeMillis();
 		try {
 			(new Thread(new GameStateManager(this))).start();
 			while(GameIsOpen()) {
@@ -45,7 +47,8 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 				if(!IsGameFull()) {
 					addPlayer(pc);
 				}else {
-					pc.rejectConnection();
+					pc.sendMessage(PlayerConnection.FINALMESSAGE);
+					pc.sendFinalMessage(PlayerConnection.FINALMESSAGE,PlayerConnection.FINALMESSAGE,"Desconectado");
 				}
 			}
 		}catch(IOException ioe) {
@@ -61,7 +64,7 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 	}
 
 	public boolean IsGameFull() {
-		return playerConnections.size()==max_player_number;
+		return playerConnections.size()==max_player_number || System.currentTimeMillis()-gameStartTime>=120000;
 	}
 
 	private boolean GameIsOpen() {

@@ -72,8 +72,9 @@ public class Server {
 		this.dbm = dbm;
 	}
 
-	public synchronized int getAvailableGameHoster() throws IOException {
+	public synchronized int getAvailableGameHoster() throws Exception {
 		if(gameHosters.isEmpty() || gameHosters.first().IsGameFull() ) {
+			if(gameHosters.size()+1>MAXGAMEHOSTERSNUM)throw new Exception("Failed");
 			gameHosters.add(new GameHoster(new ServerSocket(0),MAXPLAYERNUM,MINPLAYERNUM,this));
 			(new Thread(gameHosters.first())).start();
 			return gameHosters.first().getLocalPort();

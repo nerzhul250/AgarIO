@@ -20,13 +20,26 @@ public class GUIUpdateControlThread extends Thread{
 			int id=Integer.parseInt(controller.getMessage());
 			controller.setId(id);
 			info = controller.getMessage();
-			String m=info;
-			while(m.equals(PlayerConnection.WAITMESSAGE)) {m=controller.getMessage();}
+			while(info.equals(PlayerConnection.WAITMESSAGE)) {info=controller.getMessage();}
 			while (true) {
 				Thread.sleep(50);
 				info=controller.getMessage();
-				if(m.equals(PlayerConnection.FINALMESSAGE))break;
-				GUIUpdateRunnable gur = new GUIUpdateRunnable(controller,info);
+				if(info.equals(PlayerConnection.FINALMESSAGE))break;
+				GUIUpdateRunnable gur = new GUIUpdateRunnable(controller,info,1);
+				Platform.runLater(gur);
+			}
+			info=controller.getMessage();
+			if(info.equals(PlayerConnection.WINMESSAGE)) {
+				info=controller.getMessage();
+				GUIUpdateRunnable gur = new GUIUpdateRunnable(controller,info,2);
+				Platform.runLater(gur);
+			}else if(info.equals(PlayerConnection.LOSTMESSAGE)) {
+				info=controller.getMessage();
+				GUIUpdateRunnable gur = new GUIUpdateRunnable(controller,info,3);
+				Platform.runLater(gur);
+			}else if(info.equals(PlayerConnection.FINALMESSAGE)) {
+				info=controller.getMessage();
+				GUIUpdateRunnable gur = new GUIUpdateRunnable(controller,info,4);
 				Platform.runLater(gur);
 			}
 		}catch(Exception e){
