@@ -8,32 +8,71 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import registrationManagement.Server;
-
+/**
+ * Represents a game. It has the logical part of a game
+ * @author Steven
+ *
+ */
 public class Game implements Runnable{
+	/**
+	 * X padding of the window
+	 */
 	public final static int XPadding=100;
+	/**
+	 * Y padding of the window
+	 */
 	public final static int YPadding=100;
-	
+	/**
+	 * the length of the X axis
+	 */
 	public final static int Xlength=1000;
+	/**
+	 * the length of the Y length
+	 */
 	public final static int Ylength=1000;
+	/**
+	 * Maximun number of object of type food
+	 */
 	public final static int MAXFOODNUMBER=100;
+	/**
+	 * is the size of the podium
+	 */
 	public final static int PODIUMSIZE=3;
-	
+	/**
+	 * 
+	 */
 	private int gameObjectIdexes;
-	
+	/**
+	 * number of players alive
+	 */
 	private int numberOfPlayersAlive;
+	/**
+	 * Is the amount of food avaible in the game
+	 */
 	private int amountOfFood;
-	
+	/**
+	 * Hashmap that hashs an object in a coordinate
+	 */
 	public HashMap<Coordinate,GameObject> gameObjects;
+	/**
+	 * Hashmap that hash a player with an integer
+	 */
 	public HashMap<Integer,Player> players;
-	
+	/**
+	 * Represents the state of the objects
+	 */
 	private String objectsState;
-	
+	/**
+	 * Constructor of one game
+	 */
 	public Game() {
 		gameObjects=new HashMap<Coordinate,GameObject>(); 
 		players=new HashMap<Integer,Player>();
 		objectsState="0:0:1:0:0:";
 	}
-
+	/**
+	 * Spawns the food in randomized positions
+	 */
 	private void RandomizedFoodSpawning() {
 		while(MAXFOODNUMBER>amountOfFood) {
 			int x=(int) (Math.random()*Xlength);
@@ -50,7 +89,12 @@ public class Game implements Runnable{
 			amountOfFood++;
 		}
 	}
-
+	/**
+	 * moves a player to the coordinate passed in the parameters
+	 * @param id integer that represents an id of one player
+	 * @param x the new x coordinate
+	 * @param y the new y coordinate
+	 */
 	public void movePlayerToCoordinate(int id, int x, int y) {
 		Player p=players.get(id);
 		Coordinate newCoordinate=p.ComputeNewCoordinate(x,y);
@@ -89,11 +133,19 @@ public class Game implements Runnable{
 			}
 		}
 	}
-
+	/**
+	 * verifies if that coordinate is valid
+	 * @param c coordinate
+	 * @return true if the coordinate is valid, false in other case
+	 */
 	private boolean validCoordinate(Coordinate c) {
 		return c.x>=0 && c.y>=0 && c.x<=Xlength && c.y<=Ylength;
 	}
-
+	/**
+	 * adds a new player
+	 * @param id
+	 * @param name
+	 */
 	public void addNewPlayer(int id,String name) {
 		Coordinate c=getCoordinateForPlayer();
 		Player p=new Player(c.x,c.y,id);
