@@ -1,9 +1,28 @@
 package client;
-
+/**
+ * the thread that updates the GUI
+ * @author Steven
+ *
+ */
 public class GUIUpdateRunnable implements Runnable{
+	/**
+	 * the controller of the user
+	 */
 	private Controller controller;
+	/**
+	 * info to be showed
+	 */
 	private String info;
+	/**
+	 * 
+	 */
 	private int op;
+	/**
+	 * construct
+	 * @param c
+	 * @param info
+	 * @param op
+	 */
 	public GUIUpdateRunnable(Controller c, String info,int op) {
 		controller=c;
 		this.info=info;

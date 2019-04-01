@@ -7,18 +7,42 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-
+/**
+ * Responsible of the login part
+ * @author Steven
+ *
+ */
 public class ClientAttendant implements Runnable {
+	/**
+	 * Represents the state to register
+	 */
 	public final static String REGISTER = "R";
+	/**
+	 * represents the state to login
+	 */
 	public final static String LOGIN = "L";
-	
+	/**
+	 * Represents the accepted state
+	 */
 	public final static String ACCEPTED = "A";
+	/**
+	 * represents an error
+	 */
 	public final static String ERROR = "E";
 	
-	
+	/**
+	 * is the connection server
+	 */
 	private Server server;
+	/**
+	 * represents the client
+	 */
 	private Socket client;
-	
+	/**
+	 * Constructor
+	 * @param client
+	 * @param s
+	 */
 	public ClientAttendant(Socket client, Server s) {
 		server=s;
 		this.client=client;

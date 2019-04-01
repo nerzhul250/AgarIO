@@ -15,8 +15,14 @@ import registrationManagement.Server;
  * @author Usuario
  */
 public class GameStateManager implements Runnable {
+	/**
+	 * the game hoster associated
+	 */
 	private GameHoster gamehoster;
-	
+	/**
+	 * Constructor
+	 * @param gamehoster
+	 */
 	public GameStateManager(GameHoster gamehoster) {
 		this.gamehoster=gamehoster;
 	}
@@ -34,7 +40,11 @@ public class GameStateManager implements Runnable {
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * sends the message to wait
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	private void sendAwaitMessage() throws IOException, InterruptedException {
 		boolean awaitCompleted=true;
 		long startTime=System.currentTimeMillis();
@@ -59,7 +69,11 @@ public class GameStateManager implements Runnable {
 			gamehoster.powerOff();
 		}
 	}
-
+	/**
+	 * sends the state of the game to the player
+	 * @throws InterruptedException
+	 * @throws IOException
+	 */
 	private void sendGameState() throws InterruptedException, IOException {
 		long startTime=System.currentTimeMillis();
 		System.out.println("SENDING GAMESTATE");

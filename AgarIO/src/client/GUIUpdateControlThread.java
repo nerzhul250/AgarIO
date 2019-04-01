@@ -4,15 +4,27 @@ package client;
 import gameServer.PlayerConnection;
 import javafx.application.Platform;
 import registrationManagement.Server;
-
+/**
+ * is the control that updates the GUI
+ * @author Steven
+ *
+ */
 public class GUIUpdateControlThread extends Thread{
+	/**
+	 * controller of the user
+	 */
 	private Controller controller;
 	
-	
+	/**
+	 * constructor
+	 * @param c
+	 */
 	public GUIUpdateControlThread(Controller c) {
 		controller=c;
 	}
-	
+	/**
+	 * thread to update the gui
+	 */
 	public void run() {
 		try {
 			String info="";

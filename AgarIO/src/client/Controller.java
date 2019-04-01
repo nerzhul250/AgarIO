@@ -41,29 +41,59 @@ import registrationManagement.ClientAttendant;
 import registrationManagement.Server;
 
 public class Controller implements Initializable{
-
+	/**
+	 * ip direction of the server
+	 */
 	public static final String IP_DIRECTION = "localhost";
+	/**
+	 * the location of the key
+	 */
 	public static final String TRUSTTORE_LOCATION = "./keyStore/keystore.jks";
+	/**
+	 * is the location of the login pane
+	 */
 	public static final String LOGINPANELOCATION="/view/Login.fxml";
+	/**
+	 * location of the register pane
+	 */
 	public static final String REGISTERPANELOCATION="/view/Register.fxml";
+	/**
+	 * game pane location
+	 */
 	public static final String GAMEPANELOCATION="/view/GamePanel.fxml";
 	
-	
+	/**
+	 * buffer to transmit movements
+	 */
 	private BufferedWriter transmitMovements;
-	
+	/**
+	 * buffer to receive the game
+	 */
 	private BufferedReader receiveGame;
-	
+	/**
+	 * sockect to login
+	 */
 	private Socket socketToLoginSystem;
-	
+	/**
+	 * socket to conect
+	 */
 	private Socket socketGame;
-	
+	/**
+	 * the game objects
+	 */
 	private HashMap<Integer,GameObjectVisualComponent> gameObjects;
-	
+	/**
+	 * podium
+	 */
 	private ArrayList<Text> podium;
-	
+	/**
+	 * the game pane
+	 */
 	@FXML
 	private Pane gamePane;
-	
+	/**
+	 * txt email
+	 */
 	@FXML
 	private TextField txtEmail;
 	
@@ -86,7 +116,10 @@ public class Controller implements Initializable{
 	public void initialize(URL location, ResourceBundle resources) {
 	
 	}
-	
+	/**
+	 * method to login
+	 * @param e
+	 */
 	@FXML
 	public void login (ActionEvent e) {
 		System.setProperty("javax.net.ssl.trustStore", TRUSTTORE_LOCATION);
@@ -131,7 +164,11 @@ public class Controller implements Initializable{
 			al.showAndWait();
 		}
 	}
-	
+	/**
+	 * method to start a game
+	 * @param portGameHoster
+	 * @param nickname
+	 */
 	private void startGame(int portGameHoster, String nickname) {
 		try {
 			socketGame=new Socket(IP_DIRECTION,portGameHoster);
@@ -147,7 +184,10 @@ public class Controller implements Initializable{
 			e1.printStackTrace();
 		}
 	}
-
+	/**
+	 * method to register an user
+	 * @param e
+	 */
 	@FXML
 	public void register (ActionEvent e) {
 		System.setProperty("javax.net.ssl.trustStore", TRUSTTORE_LOCATION);
@@ -202,7 +242,10 @@ public class Controller implements Initializable{
 			al.showAndWait();
 		}
 	}
-	
+	/**
+	 * changes the frame
+	 * @param e
+	 */
 	@FXML
 	public void changeFrame(ActionEvent e) {
 		Parent root;
@@ -217,7 +260,9 @@ public class Controller implements Initializable{
 			e1.printStackTrace();
 		}
 	}
-	
+	/**
+	 * opens the pane of the game
+	 */
 	public void openPane() {
 		Parent root;
 		try {
@@ -238,7 +283,10 @@ public class Controller implements Initializable{
 		podium.add(new Text(gamePane.getWidth()-100,15,"TOP"));
 		gamePane.getChildren().add(podium.get(0));
 	}
-	
+	/**
+	 * moves a player
+	 * @param e
+	 */
 	@FXML 
 	public void onMoved(MouseEvent e) {
 		double w=e.getSceneX();
@@ -253,7 +301,10 @@ public class Controller implements Initializable{
 			e1.printStackTrace();
 		}
 	}
-
+	/**
+	 * updates de gui
+	 * @param infos
+	 */
 	public void updateGUI(String infos) {
 		String[] splitted=infos.substring(0,infos.length()-1).split(":");
 		double W=gamePane.getWidth();
@@ -322,11 +373,18 @@ public class Controller implements Initializable{
 			gameObjects.remove(toRemove.get(i));
 		}
 	}
-
+	/**
+	 * receives the message
+	 * @return
+	 * @throws IOException
+	 */
 	public String getMessage() throws IOException {
 		return receiveGame.readLine();
 	}
-
+	/**
+	 * shows the win message
+	 * @param info
+	 */
 	public void showWinMessage(String info) {
 		Alert al = new Alert(AlertType.WARNING);
 		al.setTitle("Se termino el juego");
@@ -334,7 +392,10 @@ public class Controller implements Initializable{
 		al.setContentText(info);
 		al.showAndWait();
 	}
-
+	/**
+	 * shows the lose message
+	 * @param info
+	 */
 	public void showLoseMessage(String info) {
 		Alert al = new Alert(AlertType.WARNING);
 		al.setTitle("Se termino el juego");
@@ -342,7 +403,10 @@ public class Controller implements Initializable{
 		al.setContentText(info);
 		al.showAndWait();
 	}
-
+	/**
+	 * shows the disconnect message
+	 * @param info
+	 */
 	public void showDisconnectMessage(String info) {
 		Alert al = new Alert(AlertType.WARNING);
 		al.setTitle("Conexion rechazada");

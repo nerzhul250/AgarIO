@@ -12,25 +12,68 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 import gameModel.Game;
-
+/**
+ * represents a player connection
+ * @author Steven
+ *
+ */
 public class PlayerConnection implements Runnable {
-	
+	/**
+	 * represents the wait message
+	 */
 	public final static String WAITMESSAGE="WA";
+	/**
+	 * represents the running message
+	 */
 	public final static String RUNNINGMESSAGE="R";
+	/**
+	 * represents the final message
+	 */
 	public final static String FINALMESSAGE="F";
+	/**
+	 * represents the lost message
+	 */
 	public final static String LOSTMESSAGE="L";
+	/**
+	 * represents the win message
+	 */
 	public final static String WINMESSAGE="WI";
 	
-		
+	/**
+	 * Socket that connects the player to the server
+	 */
 	private Socket socket;
+	/**
+	 * Buffered to write to the server
+	 */
 	private BufferedWriter out;
+	/**
+	 * buffered through the player listens
+	 */
 	private BufferedReader in;
-	
+	/**
+	 * the game hoster that the player is connected
+	 */
 	private GameHoster gameHoster;
+	/**
+	 * nick of the player
+	 */
 	private String nickname;
+	/**
+	 * id of the plyaer
+	 */
 	private int id;
+	/**
+	 * state of the connection
+	 */
 	private boolean isPlayerConnected;
-	
+	/**
+	 * Constructor of the player connection
+	 * @param accept socket
+	 * @param gh game hoster
+	 * @param id id of the player
+	 * @throws IOException
+	 */
 	public PlayerConnection(Socket accept, GameHoster gh,int id) throws IOException {
 		socket=accept;
 		out=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -64,26 +107,46 @@ public class PlayerConnection implements Runnable {
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 * sends the final message
+	 * @param m1
+	 * @param m2
+	 * @param m3
+	 * @throws IOException
+	 */
 	public void sendFinalMessage(String m1,String m2,String m3) throws IOException {
 		sendMessage(m1);
 		sendMessage(m2);
 		sendMessage(m3);
 	}
-	
+	/**
+	 * returns the nickname
+	 * @return
+	 */
 	public String getNickname() {
 		return nickname;
 	}
-
+	/**
+	 * sets the nickname
+	 * @throws IOException
+	 */
 	public void setNickname() throws IOException {
 		nickname=in.readLine();
 	}
-	
+	/**
+	 * sends a message to the server
+	 * @param m
+	 * @throws IOException
+	 */
 	public void sendMessage(String m) throws IOException {
 		out.write(m+"\n");
 		out.flush();
 	}
-	
+	/**
+	 * sends the state of the player
+	 * @param data
+	 * @throws IOException
+	 */
 	public void sendGameState(String data) throws IOException {
 		int x=gameHoster.getGame().players.get(id).getPosition().x;
 		int y=gameHoster.getGame().players.get(id).getPosition().y;
@@ -91,11 +154,18 @@ public class PlayerConnection implements Runnable {
         out.write(x+":"+y+":"+r+":"+data+"\n");
         out.flush();
 	}
-
+	/**
+	 * returns the id of the player
+	 * @return
+	 */
 	public int getId() {
 		return id;
 	}
-
+	/**
+	 * sets the id 
+	 *
+	 * @param id
+	 */
 	public void setId(int id) {
 		this.id = id;
 	}

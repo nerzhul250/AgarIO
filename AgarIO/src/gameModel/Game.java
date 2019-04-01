@@ -143,8 +143,8 @@ public class Game implements Runnable{
 	}
 	/**
 	 * adds a new player
-	 * @param id
-	 * @param name
+	 * @param id id of the player
+	 * @param name name of the player
 	 */
 	public void addNewPlayer(int id,String name) {
 		Coordinate c=getCoordinateForPlayer();
@@ -156,6 +156,10 @@ public class Game implements Runnable{
 		gameObjects.put(p.getPosition(),p);
 	}
 
+	/**
+	 * returns the initial coordinate of one player
+	 * @return Coordinate coordinate for the player
+	 */
 	private Coordinate getCoordinateForPlayer() {
 		int x=(int) (Math.random()*Xlength);
 		int y=(int) (Math.random()*Ylength);
@@ -189,7 +193,9 @@ public class Game implements Runnable{
 			}
 		}
 	}
-
+	/**
+	 * prepares the info of the state of the game to be sent to the clients
+	 */
 	private void setUpTransferableGame() {
 		StringBuilder sb=new StringBuilder();
 		sb.append(gameObjects.size());
@@ -221,17 +227,28 @@ public class Game implements Runnable{
 		}
 		objectsState=sb.toString();
 	}
-
+	/**
+	 * it is the objective coordinate
+	 * @param id player's id
+	 * @param x objective x coordinate
+	 * @param y objective y coordinate
+	 */
 	public void setPlayerMovingCoordinate(int id, int x, int y) {
 		if(validCoordinate(new Coordinate(x,y))) {
 			players.get(id).setMovingCoordinate(x,y);			
 		}
 	}
-
+	/**
+	 * returns the state of the objectss
+	 * @return
+	 */
 	public String getObjectsState() {
 		return objectsState;		
 	}
-
+	/**
+	 * returns the podium
+	 * @return players of the podium
+	 */
 	public ArrayList<Player> getPodium(){
 		Integer[] indexes=new Integer[1];
 		indexes=players.keySet().toArray(indexes);
@@ -244,6 +261,10 @@ public class Game implements Runnable{
 		Collections.sort(podium);
 		return podium;
 	}
+	/**
+	 * returns the greatest score
+	 * @return int greatest score
+	 */
 	public int getGreatestScorer() {
 		ArrayList<Player> podium=getPodium();
 		return podium.get(podium.size()-1).getId();
