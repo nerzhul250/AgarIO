@@ -61,15 +61,18 @@ public class Controller implements Initializable{
 	 * game pane location
 	 */
 	public static final String GAMEPANELOCATION="/view/GamePanel.fxml";
+	public static final String DECISIONPANELOCATION="/view/DecisionPane.fxml";
 	
 	/**
 	 * buffer to transmit movements
 	 */
 	private BufferedWriter transmitMovements;
+	private PrintWriter writeToAttendant;
 	/**
 	 * buffer to receive the game
 	 */
 	private BufferedReader receiveGame;
+	private BufferedReader readFromAttendant;
 	/**
 	 * sockect to login
 	 */
@@ -126,33 +129,21 @@ public class Controller implements Initializable{
 		SSLSocketFactory sf = (SSLSocketFactory) SSLSocketFactory.getDefault();
 		try {
 			socketToLoginSystem = sf.createSocket(IP_DIRECTION, Server.PORT_RECEIVE);
-			BufferedReader br = new BufferedReader(new InputStreamReader(socketToLoginSystem.getInputStream()));
-			PrintWriter out = new PrintWriter(socketToLoginSystem.getOutputStream(), true);
+			readFromAttendant= new BufferedReader(new InputStreamReader(socketToLoginSystem.getInputStream()));
+			writeToAttendant = new PrintWriter(socketToLoginSystem.getOutputStream(), true);
 			String email = txtEmail.getText();
 			String pass = passPassword.getText();
-			out.println(ClientAttendant.LOGIN);
-			out.println(email);
-			out.println(pass);
-			String ans = br.readLine();
+			writeToAttendant.println(ClientAttendant.LOGIN);
+			writeToAttendant.println(email);
+			writeToAttendant.println(pass);
+			String ans = readFromAttendant.readLine();
 			if (ans.equals(ClientAttendant.ACCEPTED)) {
-				openPane();
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				int portGameHoster=Integer.parseInt(br.readLine());
-				String nickname=br.readLine();
-				br.close();
-				out.close();
-				socketToLoginSystem.close();
-				startGame(portGameHoster,nickname);
+				openDecisionPane();
 			} else if (ans.equals(ClientAttendant.ERROR)) {
 				Alert al = new Alert(AlertType.WARNING);
 				al.setTitle("Usuario no valido");
 				al.setHeaderText("No se ha podido loguear en el sistema");
-				al.setContentText(br.readLine());
+				al.setContentText(readFromAttendant.readLine());
 				al.showAndWait();
 			}
 		} catch (IOException e1) {
@@ -162,6 +153,74 @@ public class Controller implements Initializable{
 			al.setHeaderText("Problemas con el servidor");
 			al.setContentText("No se ha podido establecer conexión con el servidor de logueo.");
 			al.showAndWait();
+		}
+	}
+	@FXML
+	public void play (ActionEvent e) {
+		writeToAttendant.println(ClientAttendant.PLAY);
+		try {
+			String nickname = readFromAttendant.readLine();
+			String dec=readFromAttendant.readLine();
+			int portGameHoster=Integer.parseInt(readFromAttendant.readLine());
+			if(dec.equals(ClientAttendant.GAMEAVAILABLE)) {
+				openGamePane();
+				readFromAttendant.close();
+				writeToAttendant.close();
+				socketToLoginSystem.close();
+				startGame(portGameHoster,nickname);
+			}else if(dec.equals(ClientAttendant.GAMEFULL)) {
+				StreamingController sc=new StreamingController();
+				sc.openObserverPane();
+				readFromAttendant.close();
+				writeToAttendant.close();
+				socketToLoginSystem.close();
+				sc.startStreaming(portGameHoster,nickname);
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			Alert al = new Alert(AlertType.ERROR);
+			al.setTitle("Error en la conexión");
+			al.setHeaderText("Problemas con el servidor");
+			al.setContentText("No se ha podido establecer conexión con el servidor de logueo.");
+			al.showAndWait();
+		}
+		
+	}
+	@FXML
+	public void observe (ActionEvent e) {
+		writeToAttendant.println(ClientAttendant.OBSERVER);
+		String nickname;
+		try {
+			nickname = readFromAttendant.readLine();
+			int portGameHoster=Integer.parseInt(readFromAttendant.readLine());
+			StreamingController sc=new StreamingController();
+			sc.openObserverPane();
+			readFromAttendant.close();
+			writeToAttendant.close();
+			socketToLoginSystem.close();
+			sc.startStreaming(portGameHoster,nickname);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			Alert al = new Alert(AlertType.ERROR);
+			al.setTitle("Error en la conexión");
+			al.setHeaderText("Problemas con el servidor");
+			al.setContentText("No se ha podido establecer conexión con el servidor de logueo.");
+			al.showAndWait();
+		}
+	}
+	private void openDecisionPane() {
+		Parent root;
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(DECISIONPANELOCATION));
+			loader.setController(this);
+			root = loader.load();
+			Scene scene = new Scene(root);
+			Stage stage = new Stage();
+			stage.setScene(scene);
+			stage.show();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
 	/**
@@ -177,7 +236,7 @@ public class Controller implements Initializable{
 			transmitMovements.write(nickname+"\n");
 			transmitMovements.flush();
 			System.out.println("GameStarting");
-			new GUIUpdateControlThread(this).start();
+			new GUIGameUpdateControlThread(this).start();
 			Thread.sleep(2000);
 		} catch (InterruptedException | IOException e1) {
 			// TODO Auto-generated catch block
@@ -263,7 +322,7 @@ public class Controller implements Initializable{
 	/**
 	 * opens the pane of the game
 	 */
-	public void openPane() {
+	public void openGamePane() {
 		Parent root;
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(GAMEPANELOCATION));
@@ -348,6 +407,7 @@ public class Controller implements Initializable{
 				gamePane.getChildren().add(t);
 //			}
 		}
+		//Updates the podium
 		int podiumSize=Integer.parseInt(splitted[(n-1)*6+10]);
 		podium.get(0).setLayoutX(gamePane.getWidth()-100-podium.get(0).getLayoutBounds().getMinX());
 		podium.get(0).setLayoutY(15-podium.get(0).getLayoutBounds().getMinY());
@@ -361,6 +421,7 @@ public class Controller implements Initializable{
 				podium.get(i+1).setLayoutY(30+i*15-podium.get(i+1).getLayoutBounds().getMinY());
 			}
 		}
+		//Removes gameObjects no longer in the game
 		Iterator<Integer> it2=gameObjects.keySet().iterator();
 		ArrayList<Integer> toRemove=new ArrayList<Integer>();
 		while(it2.hasNext()) {

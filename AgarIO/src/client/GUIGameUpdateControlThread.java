@@ -9,7 +9,7 @@ import registrationManagement.Server;
  * @author Steven
  *
  */
-public class GUIUpdateControlThread extends Thread{
+public class GUIGameUpdateControlThread extends Thread{
 	/**
 	 * controller of the user
 	 */
@@ -19,7 +19,7 @@ public class GUIUpdateControlThread extends Thread{
 	 * constructor
 	 * @param c
 	 */
-	public GUIUpdateControlThread(Controller c) {
+	public GUIGameUpdateControlThread(Controller c) {
 		controller=c;
 	}
 	/**
@@ -34,21 +34,21 @@ public class GUIUpdateControlThread extends Thread{
 				Thread.sleep(Server.GAMEPACE);
 				info=controller.getMessage();
 				if(info.equals(PlayerConnection.FINALMESSAGE))break;
-				GUIUpdateRunnable gur = new GUIUpdateRunnable(controller,info,1);
+				GUIGameUpdateRunnable gur = new GUIGameUpdateRunnable(controller,info,1);
 				Platform.runLater(gur);
 			}
 			info=controller.getMessage();
 			if(info.equals(PlayerConnection.WINMESSAGE)) {
 				info=controller.getMessage();
-				GUIUpdateRunnable gur = new GUIUpdateRunnable(controller,info,2);
+				GUIGameUpdateRunnable gur = new GUIGameUpdateRunnable(controller,info,2);
 				Platform.runLater(gur);
 			}else if(info.equals(PlayerConnection.LOSTMESSAGE)) {
 				info=controller.getMessage();
-				GUIUpdateRunnable gur = new GUIUpdateRunnable(controller,info,3);
+				GUIGameUpdateRunnable gur = new GUIGameUpdateRunnable(controller,info,3);
 				Platform.runLater(gur);
 			}else if(info.equals(PlayerConnection.FINALMESSAGE)) {
 				info=controller.getMessage();
-				GUIUpdateRunnable gur = new GUIUpdateRunnable(controller,info,4);
+				GUIGameUpdateRunnable gur = new GUIGameUpdateRunnable(controller,info,4);
 				Platform.runLater(gur);
 			}
 		}catch(Exception e){

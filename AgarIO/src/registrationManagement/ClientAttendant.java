@@ -29,7 +29,11 @@ public class ClientAttendant implements Runnable {
 	 * represents an error
 	 */
 	public final static String ERROR = "E";
-	
+	public final static String GAMEFULL = "GF";
+	public final static String GAMEAVAILABLE = "GA";
+	public final static String PLAY = "P";
+	public final static String OBSERVER = "O";
+
 	/**
 	 * is the connection server
 	 */
@@ -73,13 +77,25 @@ public class ClientAttendant implements Runnable {
 				String password=in.readLine();
 				try {
 					String nickname=server.getDbm().checkUser(email,password).getUserName();
-					int portGameHoster=server.getAvailableGameHoster();
+					int portGameHoster=0;
 					out.println(ACCEPTED);
-					out.println(portGameHoster);
 					out.println(nickname);
+					requiredService=in.readLine();
+					if(requiredService.equals(PLAY)){
+						try {
+							portGameHoster=server.getAvailableGameHoster();	
+							out.println(GAMEAVAILABLE);
+						}catch(Exception e) {
+							portGameHoster=server.getGameHoster(0);
+							out.println(GAMEFULL);
+						}
+					}else if(requiredService.equals(OBSERVER)){
+						portGameHoster=server.getGameHoster(0);
+					}
+					out.println(portGameHoster);						
 				} catch (Exception e) {
-					out.println(ERROR);
 					e.printStackTrace();
+					out.println(ERROR);
 					out.println(e.getMessage());
 				}
 			}

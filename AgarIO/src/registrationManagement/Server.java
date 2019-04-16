@@ -124,7 +124,7 @@ public class Server {
 		this.dbm = dbm;
 	}
 	/**
-	 * returns an avaible game hoster
+	 * returns an available game hoster
 	 * @return
 	 * @throws Exception
 	 */
@@ -137,5 +137,8 @@ public class Server {
 		}else {
 			return gameHosters.first().getLocalPort();
 		}
+	}
+	public int getGameHoster(int i) {
+		return gameHosters.first().getLocalPort();
 	}
 }

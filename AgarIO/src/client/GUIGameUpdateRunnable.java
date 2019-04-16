@@ -4,7 +4,7 @@ package client;
  * @author Steven
  *
  */
-public class GUIUpdateRunnable implements Runnable{
+public class GUIGameUpdateRunnable implements Runnable{
 	/**
 	 * the controller of the user
 	 */
@@ -23,7 +23,7 @@ public class GUIUpdateRunnable implements Runnable{
 	 * @param info
 	 * @param op
 	 */
-	public GUIUpdateRunnable(Controller c, String info,int op) {
+	public GUIGameUpdateRunnable(Controller c, String info,int op) {
 		controller=c;
 		this.info=info;
 		this.op=op;
