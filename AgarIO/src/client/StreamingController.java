@@ -5,16 +5,27 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Socket;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
+import gameModel.Game;
+import gameServer.GameHoster;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class StreamingController implements Initializable {
@@ -23,21 +34,26 @@ public class StreamingController implements Initializable {
 	
 	
 	/**
-	 * buffer to transmit movements
+	 * buffer to transmit
 	 */
-	private BufferedWriter transmitMovements;
+	private BufferedWriter transmit;
 	/**
-	 * buffer to receive the game
+	 * buffer to receive
 	 */
-	private BufferedReader receiveGame;
+	private BufferedReader receive;
 	/**
 	 * socket to conect
 	 */
-	private Socket socketGame;
+	private Socket socket;
+	private DatagramSocket streamingEnd;
 	
+	private ArrayList<Text> podium;
+	private HashMap<Integer,GameObjectVisualComponent> gameObjects;
 	
 	@FXML
 	private Pane observerPane;
+
+
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -61,17 +77,101 @@ public class StreamingController implements Initializable {
 	}
 	public void startStreaming(int portGameHoster, String nickname) {
 		try {
-			socketGame=new Socket(Controller.IP_DIRECTION,portGameHoster);
-			receiveGame=new BufferedReader(new InputStreamReader(socketGame.getInputStream()));
-			transmitMovements=new BufferedWriter(new OutputStreamWriter(socketGame.getOutputStream()));
-			transmitMovements.write(nickname+"\n");
-			transmitMovements.flush();
-			System.out.println("GameStarting");
+			socket=new Socket(Controller.IP_DIRECTION,portGameHoster);
+			receive=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			transmit=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+			transmit.write(GameHoster.OBSERVER+"\n");
+			transmit.write(nickname+"\n");
+			transmit.flush();
+			System.out.println("StreamingStarting");
+			streamingEnd=new DatagramSocket(socket.getLocalPort());
 			(new GUIStreamingUpdateControlThread(this)).start();
 			Thread.sleep(2000);
 		} catch (InterruptedException | IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		}
+	}
+	public String getMessage() {
+		byte[] recibirDatos =  new byte[1024];
+		DatagramPacket recibirPaquete = new DatagramPacket(recibirDatos, recibirDatos.length);
+		try {        
+			 streamingEnd.receive(recibirPaquete);
+		 } catch (IOException e) {
+			 System.out.println("Error al recibir");
+			 System.exit ( 0 );
+		 }	
+		 String frase = new String(recibirPaquete.getData());
+		 return frase;
+	}
+	public void updateGUI(String infos) {
+		String[] splitted=infos.substring(0,infos.length()-1).split(":");
+		double W=observerPane.getWidth();
+		double H=observerPane.getHeight();
+		double x0=Double.parseDouble(splitted[0]);
+		double y0=Double.parseDouble(splitted[1]);
+		double r=Double.parseDouble(splitted[2]);
+		double X=2*r+Game.XPadding*2;
+		double Y=2*r+Game.YPadding*2;
+		int n=Integer.parseInt(splitted[3]);
+		HashSet<Integer> globalIndexes=new HashSet<Integer>();
+		for (int i = 0; i <n; i++) {
+			int index=i*6+4;
+			int globIndex=Integer.parseInt(splitted[index]);
+			globalIndexes.add(globIndex);
+			int x=Integer.parseInt(splitted[index+1]);
+			int y=Integer.parseInt(splitted[index+2]);
+			int color=Integer.parseInt(splitted[index+4]);
+			double radius=Double.parseDouble(splitted[index+3]);
+			double w=(W/X)*x+(W/2)-(W/X)*x0;
+			double h=(H/Y)*y+(H/2)-(H/Y)*y0;
+			String name=splitted[index+5];
+			if(gameObjects.containsKey(globIndex)) {
+				observerPane.getChildren().remove(gameObjects.get(globIndex).c);
+				observerPane.getChildren().remove(gameObjects.get(globIndex).name);
+//				gameObjects.get(globIndex).c.setLayoutX(w);
+//				gameObjects.get(globIndex).c.setLayoutY(h);
+//				gameObjects.get(globIndex).c.setRadius((W/X)*radius);
+//				gameObjects.get(globIndex).name.setLayoutX(w-10-gameObjects.get(globIndex).name.getLayoutBounds().getMinX());
+//				gameObjects.get(globIndex).name.setLayoutY(h-10-gameObjects.get(globIndex).name.getLayoutBounds().getMinY());
+			}
+//			else {
+				int basic=(1<<8)-1;
+				Circle c = new Circle((W/X)*radius,new Color((color&basic)/256.0,((color&(basic<<8))>>8)/256.0,((color&(basic<<16))>>16)/256.0,1));
+				c.setLayoutX(w);
+				c.setLayoutY(h);
+				Text t=new Text(w,h,name);
+				GameObjectVisualComponent g=new GameObjectVisualComponent(globIndex, c,t);
+				gameObjects.put(globIndex,g);
+				observerPane.getChildren().add(c);
+				observerPane.getChildren().add(t);
+//			}
+		}
+		//Updates the podium
+		int podiumSize=Integer.parseInt(splitted[(n-1)*6+10]);
+		podium.get(0).setLayoutX(observerPane.getWidth()-100-podium.get(0).getLayoutBounds().getMinX());
+		podium.get(0).setLayoutY(15-podium.get(0).getLayoutBounds().getMinY());
+		for (int i = 0; i < podiumSize; i++) {
+			if(podium.size()<2+i) {
+				podium.add(new Text(observerPane.getWidth()-100,30+i*15,splitted[(n-1)*6+11+i]));
+				observerPane.getChildren().add(podium.get(i+1));
+			}else {
+				podium.get(i+1).setText(splitted[(n-1)*6+11+i]);
+				podium.get(i+1).setLayoutX(observerPane.getWidth()-100-podium.get(i+1).getLayoutBounds().getMinX());
+				podium.get(i+1).setLayoutY(30+i*15-podium.get(i+1).getLayoutBounds().getMinY());
+			}
+		}
+		//Removes gameObjects no longer in the game
+		Iterator<Integer> it2=gameObjects.keySet().iterator();
+		ArrayList<Integer> toRemove=new ArrayList<Integer>();
+		while(it2.hasNext()) {
+			Integer tor=it2.next();
+			if(!globalIndexes.contains(tor))toRemove.add(tor);
+		}
+		for (int i = 0; i < toRemove.size(); i++) {
+			observerPane.getChildren().remove(gameObjects.get(toRemove.get(i)).c);
+			observerPane.getChildren().remove(gameObjects.get(toRemove.get(i)).name);
+			gameObjects.remove(toRemove.get(i));
 		}
 	}
 

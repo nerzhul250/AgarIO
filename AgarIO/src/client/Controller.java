@@ -17,6 +17,7 @@ import java.util.ResourceBundle;
 import javax.net.ssl.SSLSocketFactory;
 
 import gameModel.Game;
+import gameServer.GameHoster;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -233,6 +234,7 @@ public class Controller implements Initializable{
 			socketGame=new Socket(IP_DIRECTION,portGameHoster);
 			receiveGame=new BufferedReader(new InputStreamReader(socketGame.getInputStream()));
 			transmitMovements=new BufferedWriter(new OutputStreamWriter(socketGame.getOutputStream()));
+			transmitMovements.write(GameHoster.PLAYER+"\n");			
 			transmitMovements.write(nickname+"\n");
 			transmitMovements.flush();
 			System.out.println("GameStarting");

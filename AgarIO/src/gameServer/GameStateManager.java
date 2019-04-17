@@ -87,6 +87,9 @@ public class GameStateManager implements Runnable {
 					con.sendFinalMessage(PlayerConnection.FINALMESSAGE,PlayerConnection.LOSTMESSAGE,"Te han comido");
 				}
 			}
+			for (int i = 0; i < gamehoster.getObserverConnections().size(); i++) {
+				gamehoster.getObserverConnections().get(i).getStreamingService().sendGameState(gamehoster.getGame().getObjectsState());
+			}
 			Thread.sleep(Server.GAMEPACE);
 		}
 		System.out.println("STOP SENDING GAMESTATE");
@@ -98,6 +101,9 @@ public class GameStateManager implements Runnable {
 				gamehoster.getPlayerConnections().get(i).sendFinalMessage(PlayerConnection.FINALMESSAGE,PlayerConnection.LOSTMESSAGE,
 						"El ganador ha sido "+gamehoster.getPlayerConnections().get(gamehoster.getGame().getGreatestScorer()).getNickname());								
 			}
+		}
+		for (int i = 0; i < gamehoster.getObserverConnections().size(); i++) {
+			gamehoster.getObserverConnections().get(i).getStreamingService().sendMessage(PlayerConnection.FINALMESSAGE);
 		}
 		gamehoster.powerOff();
 	}

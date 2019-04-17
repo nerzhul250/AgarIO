@@ -1,7 +1,11 @@
 package gameServer;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 
 import gameModel.Game;
@@ -12,6 +16,8 @@ import registrationManagement.Server;
  *
  */
 public class GameHoster implements Runnable, Comparable<GameHoster> {
+	public final static String OBSERVER="Ob";
+	public final static String PLAYER="Pl";
 	/**
 	 * the maxium number of players
 	 */
@@ -41,9 +47,17 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 	 */
 	private ServerSocket serverSocket;
 	/**
+	 * the DatagramSocket where the server transmits the udpStreaming
+	 */
+	private  DatagramSocket udpStreaming;
+	/**
 	 * list of the connections of all players
 	 */
 	private ArrayList<PlayerConnection> playerConnections;
+	/**
+	 * list of the connections of all Observers
+	 */
+	private ArrayList<ObserverConnection> observersConnections;
 	/**
 	 * the logical part of a game
 	 */
@@ -66,6 +80,7 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 		
 		gameState=new Game();
 		serverSocket=ss;
+		udpStreaming=new DatagramSocket(ss.getLocalPort());
 	}
 	
 	@Override
@@ -75,13 +90,22 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 			(new Thread(new GameStateManager(this))).start();
 			while(GameIsOpen()) {
 				System.out.println("SERVERUP");
-				PlayerConnection pc=new PlayerConnection(serverSocket.accept(),this,index++);
-				System.out.println(pc.getId());
-				if(!IsGameFull()) {
-					addPlayer(pc);
-				}else {
-					pc.sendMessage(PlayerConnection.FINALMESSAGE);
-					pc.sendFinalMessage(PlayerConnection.FINALMESSAGE,PlayerConnection.FINALMESSAGE,"Desconectado");
+				Socket s=serverSocket.accept();
+				BufferedReader br=new BufferedReader(new InputStreamReader(s.getInputStream()));
+				String type= br.readLine();
+				if(type.equals(PLAYER)) {
+					PlayerConnection pc=new PlayerConnection(s,this,index++);
+					System.out.println(pc.getId());
+					if(!IsGameFull()) {
+						addPlayer(pc);
+					}else {
+						pc.sendMessage(PlayerConnection.FINALMESSAGE);
+						pc.sendFinalMessage(PlayerConnection.FINALMESSAGE,PlayerConnection.FINALMESSAGE,"Desconectado");
+					}
+				}else if(type.equals(OBSERVER)) {
+					ObserverConnection oc=new ObserverConnection(br.readLine());
+					oc.initializeStreamingService(udpStreaming,s.getPort(),s.getInetAddress());
+					observersConnections.add(oc);
 				}
 			}
 		}catch(IOException ioe) {
@@ -151,6 +175,9 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 	 */
 	public ArrayList<PlayerConnection> getPlayerConnections() {
 		return playerConnections;
+	}
+	public ArrayList<ObserverConnection> getObserverConnections() {
+		return observersConnections;
 	}
 	/**
 	 * sets the list of connections
