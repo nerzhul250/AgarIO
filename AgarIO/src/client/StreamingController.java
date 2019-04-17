@@ -20,8 +20,13 @@ import gameServer.GameHoster;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -46,19 +51,17 @@ public class StreamingController implements Initializable {
 	 */
 	private Socket socket;
 	private DatagramSocket streamingEnd;
-	
+	private int posx,posy;
 	private ArrayList<Text> podium;
 	private HashMap<Integer,GameObjectVisualComponent> gameObjects;
 	
 	@FXML
 	private Pane observerPane;
-
-
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		// TODO Auto-generated method stub
-		
+		posx=(int) (Game.Xlength*Math.random());
+		posy=(int) (Game.Ylength*Math.random());
 	}
 	public void openObserverPane() {
 		Parent root;
@@ -74,6 +77,11 @@ public class StreamingController implements Initializable {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		observerPane.setBackground(new Background(new BackgroundFill(new Color(195/256.0,222/256.0,250/256.0,1),CornerRadii.EMPTY, Insets.EMPTY)));
+		gameObjects=new HashMap<Integer,GameObjectVisualComponent>();
+		podium=new ArrayList<Text>();
+		podium.add(new Text(observerPane.getWidth()-100,15,"TOP"));
+		observerPane.getChildren().add(podium.get(0));
 	}
 	public void startStreaming(int portGameHoster, String nickname) {
 		try {
@@ -93,7 +101,7 @@ public class StreamingController implements Initializable {
 		}
 	}
 	public String getMessage() {
-		byte[] recibirDatos =  new byte[1024];
+		byte[] recibirDatos =  new byte[20000];
 		DatagramPacket recibirPaquete = new DatagramPacket(recibirDatos, recibirDatos.length);
 		try {        
 			 streamingEnd.receive(recibirPaquete);
@@ -104,19 +112,33 @@ public class StreamingController implements Initializable {
 		 String frase = new String(recibirPaquete.getData());
 		 return frase;
 	}
-	public void updateGUI(String infos) {
-		String[] splitted=infos.substring(0,infos.length()-1).split(":");
+	
+	@FXML 
+	public void onClicked(MouseEvent e) {
+		double w=e.getSceneX();
+		double h=e.getSceneY();
 		double W=observerPane.getWidth();
 		double H=observerPane.getHeight();
-		double x0=Double.parseDouble(splitted[0]);
-		double y0=Double.parseDouble(splitted[1]);
-		double r=Double.parseDouble(splitted[2]);
-		double X=2*r+Game.XPadding*2;
-		double Y=2*r+Game.YPadding*2;
-		int n=Integer.parseInt(splitted[3]);
+		double x0=posx;
+		double y0=posy;
+		double X=Game.XPadding*5;
+		double Y=Game.YPadding*5;
+		posx=(int) ((X/W)*(w+(W*x0/X)-(W/2)));
+		posy=(int) ((Y/H)*(h+(H*y0/Y)-(H/2)));
+	}
+	
+	public void updateGUI(String infos) {
+		String[] splitted=infos.substring(0,infos.lastIndexOf(':')).split(":");
+		double W=observerPane.getWidth();
+		double H=observerPane.getHeight();
+		double x0=posx;
+		double y0=posy;
+		double X=Game.XPadding*4;
+		double Y=Game.YPadding*4;
+		int n=Integer.parseInt(splitted[0]);
 		HashSet<Integer> globalIndexes=new HashSet<Integer>();
 		for (int i = 0; i <n; i++) {
-			int index=i*6+4;
+			int index=i*6+1;
 			int globIndex=Integer.parseInt(splitted[index]);
 			globalIndexes.add(globIndex);
 			int x=Integer.parseInt(splitted[index+1]);
@@ -148,15 +170,15 @@ public class StreamingController implements Initializable {
 //			}
 		}
 		//Updates the podium
-		int podiumSize=Integer.parseInt(splitted[(n-1)*6+10]);
+		int podiumSize=Integer.parseInt(splitted[(n-1)*6+7]);
 		podium.get(0).setLayoutX(observerPane.getWidth()-100-podium.get(0).getLayoutBounds().getMinX());
 		podium.get(0).setLayoutY(15-podium.get(0).getLayoutBounds().getMinY());
 		for (int i = 0; i < podiumSize; i++) {
 			if(podium.size()<2+i) {
-				podium.add(new Text(observerPane.getWidth()-100,30+i*15,splitted[(n-1)*6+11+i]));
+				podium.add(new Text(observerPane.getWidth()-100,30+i*15,splitted[(n-1)*6+8+i]));
 				observerPane.getChildren().add(podium.get(i+1));
 			}else {
-				podium.get(i+1).setText(splitted[(n-1)*6+11+i]);
+				podium.get(i+1).setText(splitted[(n-1)*6+8+i]);
 				podium.get(i+1).setLayoutX(observerPane.getWidth()-100-podium.get(i+1).getLayoutBounds().getMinX());
 				podium.get(i+1).setLayoutY(30+i*15-podium.get(i+1).getLayoutBounds().getMinY());
 			}

@@ -72,16 +72,17 @@ public class PlayerConnection implements Runnable {
 	 * @param accept socket
 	 * @param gh game hoster
 	 * @param id id of the player
+	 * @param nickName2 
 	 * @throws IOException
 	 */
-	public PlayerConnection(Socket accept, GameHoster gh,int id) throws IOException {
+	public PlayerConnection(Socket accept, GameHoster gh,int id, String nickName2) throws IOException {
 		socket=accept;
 		out=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 		in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		gameHoster=gh;
 		this.id=id;
 		isPlayerConnected=true;
-		setNickname();
+		nickname=nickName2;
 	}
 	
 	@Override
@@ -125,13 +126,6 @@ public class PlayerConnection implements Runnable {
 	 */
 	public String getNickname() {
 		return nickname;
-	}
-	/**
-	 * sets the nickname
-	 * @throws IOException
-	 */
-	public void setNickname() throws IOException {
-		nickname=in.readLine();
 	}
 	/**
 	 * sends a message to the server

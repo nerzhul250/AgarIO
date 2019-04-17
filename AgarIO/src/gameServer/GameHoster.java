@@ -76,6 +76,7 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 		gameIsOpen=true;
 		
 		playerConnections=new ArrayList<PlayerConnection>();
+		observersConnections=new ArrayList<ObserverConnection>();
 		server=s;
 		
 		gameState=new Game();
@@ -93,8 +94,9 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 				Socket s=serverSocket.accept();
 				BufferedReader br=new BufferedReader(new InputStreamReader(s.getInputStream()));
 				String type= br.readLine();
+				String nickName=br.readLine();
 				if(type.equals(PLAYER)) {
-					PlayerConnection pc=new PlayerConnection(s,this,index++);
+					PlayerConnection pc=new PlayerConnection(s,this,index++,nickName);
 					System.out.println(pc.getId());
 					if(!IsGameFull()) {
 						addPlayer(pc);
@@ -103,7 +105,7 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 						pc.sendFinalMessage(PlayerConnection.FINALMESSAGE,PlayerConnection.FINALMESSAGE,"Desconectado");
 					}
 				}else if(type.equals(OBSERVER)) {
-					ObserverConnection oc=new ObserverConnection(br.readLine());
+					ObserverConnection oc=new ObserverConnection(nickName);
 					oc.initializeStreamingService(udpStreaming,s.getPort(),s.getInetAddress());
 					observersConnections.add(oc);
 				}

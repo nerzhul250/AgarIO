@@ -18,7 +18,7 @@ public class StreamingService {
 	}
 	
 	public void sendGameState(String data) {
-		 byte[] enviarDatos =  new byte[1024];
+		 byte[] enviarDatos =  new byte[20000];
 		 enviarDatos=data.getBytes();
 		 DatagramPacket enviarPaquete = new DatagramPacket(enviarDatos, enviarDatos.length,remoteIP,remotePort);
 		 try {        
