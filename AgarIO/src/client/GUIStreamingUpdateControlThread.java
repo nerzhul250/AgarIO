@@ -6,13 +6,20 @@ import registrationManagement.Server;
 
 public class GUIStreamingUpdateControlThread extends Thread{
 	
+	/**
+	 * Streaming controller
+	 */
 	private StreamingController sc;
-	
+	/**
+	 * Constructor of the class that updates the GUI
+	 */
 	public GUIStreamingUpdateControlThread(StreamingController sc) {
 		this.sc=sc;
 	}
 
-	
+	/**
+	 * Method that starts the streaming
+	 */
 	public void run() {
 		try {
 			String info;

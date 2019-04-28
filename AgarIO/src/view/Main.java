@@ -10,6 +10,9 @@ import javafx.scene.layout.BorderPane;
 
 
 public class Main extends Application {
+	/**
+	 * starts the GUI
+	 */
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -21,7 +24,9 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * method that make it visible
+	 */
 	public static void main(String[] args) {
 		launch(args);
 	}

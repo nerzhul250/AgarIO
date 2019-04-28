@@ -50,9 +50,21 @@ public class StreamingController implements Initializable {
 	 * socket to conect
 	 */
 	private Socket socket;
+	/**
+	 * datagramSocket
+	 */
 	private DatagramSocket streamingEnd;
+	/**
+	 * position of the player that are watching
+	 */
 	private int posx,posy;
+	/**
+	 * score of the players
+	 */
 	private ArrayList<Text> podium;
+	/**
+	 * objects in the game
+	 */
 	private HashMap<Integer,GameObjectVisualComponent> gameObjects;
 	
 	@FXML
@@ -63,6 +75,9 @@ public class StreamingController implements Initializable {
 		posx=(int) (Game.Xlength*Math.random());
 		posy=(int) (Game.Ylength*Math.random());
 	}
+	/**
+	 * method that open a pane for the observer
+	 */
 	public void openObserverPane() {
 		Parent root;
 		try {
@@ -83,6 +98,9 @@ public class StreamingController implements Initializable {
 		podium.add(new Text(observerPane.getWidth()-100,15,"TOP"));
 		observerPane.getChildren().add(podium.get(0));
 	}
+	/**
+	 * method that starts to streaming
+	 */
 	public void startStreaming(int portGameHoster, String nickname) {
 		try {
 			socket=new Socket(Controller.IP_DIRECTION,portGameHoster);
@@ -100,6 +118,9 @@ public class StreamingController implements Initializable {
 			e1.printStackTrace();
 		}
 	}
+	/**
+	 * method that get the message of the observers
+	 */
 	public String getMessage() {
 		byte[] recibirDatos =  new byte[20000];
 		DatagramPacket recibirPaquete = new DatagramPacket(recibirDatos, recibirDatos.length);
@@ -112,7 +133,9 @@ public class StreamingController implements Initializable {
 		 String frase = new String(recibirPaquete.getData());
 		 return frase;
 	}
-	
+	/**
+	 * Method that permit the observer follow the person who is streaming
+	 */
 	@FXML 
 	public void onClicked(MouseEvent e) {
 		double w=e.getSceneX();
@@ -126,7 +149,9 @@ public class StreamingController implements Initializable {
 		posx=(int) ((X/W)*(w+(W*x0/X)-(W/2)));
 		posy=(int) ((Y/H)*(h+(H*y0/Y)-(H/2)));
 	}
-	
+	/**
+	 * method that update the GUI
+	 */
 	public void updateGUI(String infos) {
 		String[] splitted=infos.substring(0,infos.lastIndexOf(':')).split(":");
 		double W=observerPane.getWidth();

@@ -51,7 +51,9 @@ public class ClientAttendant implements Runnable {
 		server=s;
 		this.client=client;
 	}
-
+	/**
+	 * method that start to attendant a client
+	 */
 	@Override
 	public void run() {
 		BufferedReader in;

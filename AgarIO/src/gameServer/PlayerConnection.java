@@ -84,7 +84,9 @@ public class PlayerConnection implements Runnable {
 		isPlayerConnected=true;
 		nickname=nickName2;
 	}
-	
+	/**
+	 * Starts the position of the players that is hosting
+	 */
 	@Override
 	public void run() {
 		try {

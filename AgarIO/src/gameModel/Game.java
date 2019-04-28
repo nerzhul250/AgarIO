@@ -170,7 +170,9 @@ public class Game implements Runnable{
 		}
 		return c;
 	}
-
+	/**
+	 * method that starts the game
+	 */
 	@Override
 	public void run() {
 		while(numberOfPlayersAlive>1) {

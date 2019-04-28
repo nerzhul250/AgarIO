@@ -156,6 +156,9 @@ public class Controller implements Initializable{
 			al.showAndWait();
 		}
 	}
+	/**
+	 * Method that start the game
+	 */
 	@FXML
 	public void play (ActionEvent e) {
 		writeToAttendant.println(ClientAttendant.PLAY);
@@ -187,6 +190,9 @@ public class Controller implements Initializable{
 		}
 		
 	}
+	/**
+	 * Methot that start the streaming for the observers
+	 */
 	@FXML
 	public void observe (ActionEvent e) {
 		writeToAttendant.println(ClientAttendant.OBSERVER);
@@ -209,6 +215,9 @@ public class Controller implements Initializable{
 			al.showAndWait();
 		}
 	}
+	/**
+	 * Method that open the decision pane
+	 */
 	private void openDecisionPane() {
 		Parent root;
 		try {

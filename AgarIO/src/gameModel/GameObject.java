@@ -114,7 +114,9 @@ public class GameObject implements Comparable<GameObject>{
 	public Color getColor() {
 		return color;
 	}
-
+	/**
+	 * return the comparation
+	 */
 	@Override
 	public int compareTo(GameObject o) {
 		Integer one=(int) getWeight();

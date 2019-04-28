@@ -23,11 +23,16 @@ public class Coordinate{
 		this.x=x;
 		this.y=y;
 	}
+	/**
+	 * return the hash code
+	 */
 	@Override
 	public int hashCode() {
 		return x+y;
 	}
-	
+	/**
+	 * return a boolean 
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		Coordinate co=(Coordinate)obj;

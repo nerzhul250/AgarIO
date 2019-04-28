@@ -83,7 +83,9 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 		serverSocket=ss;
 		udpStreaming=new DatagramSocket(ss.getLocalPort());
 	}
-	
+	/**
+	 * method that inicializate the server
+	 */
 	@Override
 	public void run() {
 		gameStartTime=System.currentTimeMillis();

@@ -102,7 +102,9 @@ public class Server {
 		gameHosters.remove(gameHoster);
 		gameHosters.add(gameHoster);
 	}
-	
+	/**
+	 * method that starts the server
+	 */
 	public static void main(String[] args) {
 		try {
 			Server server = new Server();
@@ -115,11 +117,15 @@ public class Server {
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 * return the data base
+	 */
 	public DataBaseManager getDbm() {
 		return dbm;
 	}
-
+	/**
+	 * method set the data base
+	 */
 	public void setDbm(DataBaseManager dbm) {
 		this.dbm = dbm;
 	}
@@ -138,6 +144,9 @@ public class Server {
 			return gameHosters.first().getLocalPort();
 		}
 	}
+	/**
+	 * return the actual game hoster
+	 */
 	public int getGameHoster(int i) {
 		return gameHosters.first().getLocalPort();
 	}

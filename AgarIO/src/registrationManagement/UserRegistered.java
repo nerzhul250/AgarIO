@@ -38,7 +38,9 @@ public class UserRegistered implements Serializable{
 	public boolean checkPassword(String password) {
 		return this.password.equals(password);
 	}
-	
+	/**
+	 * get the name of the users
+	 */
 	public String getUserName() {
 		return userName;
 	}
