@@ -1,8 +1,10 @@
 package gameServer;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -101,10 +103,20 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 				Socket s=serverSocket.accept();
 				
 				BufferedReader br=new BufferedReader(new InputStreamReader(s.getInputStream()));
+				BufferedWriter bw= new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+				//STEVEN
+				String[] ports = br.readLine().split(" ");
+//				System.out.println(ports[0]+" "+ ports[1]);
+				
+				//STEVEN
 				String type= br.readLine();
 				String nickName=br.readLine();
 				if(type.equals(PLAYER)) {
-					PlayerConnection pc=new PlayerConnection(s,this,index++,nickName);
+					PlayerConnection pc=new PlayerConnection(s,this,index++,nickName,Integer.parseInt(ports[0]),Integer.parseInt(ports[1]));
+					//STEVEN
+					bw.write(pc.getChangingSocketPort()+"\n");
+					bw.flush();
+					//STEVEN
 					System.out.println(pc.getId());
 					if(!IsGameFull()) {
 						addPlayer(pc);
@@ -117,6 +129,7 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 					oc.initializeStreamingService(udpStreaming,s.getPort(),s.getInetAddress());
 					observersConnections.add(oc);
 				}
+				
 			}
 		}catch(IOException ioe) {
 			

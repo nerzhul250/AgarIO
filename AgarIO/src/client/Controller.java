@@ -64,6 +64,7 @@ public class Controller implements Initializable{
 	public static final String GAMEPANELOCATION="/view/GamePanel.fxml";
 	public static final String DECISIONPANELOCATION="/view/DecisionPane.fxml";
 	
+	public String[] songs;
 	/**
 	 * buffer to transmit movements
 	 */
@@ -116,11 +117,38 @@ public class Controller implements Initializable{
 	@FXML
 	private TextField txtNickName;
 	
+	@FXML
+	private TextField txtSong;
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 	
 	}
 	private ThreadAudioClientUDP audio;
+	private int indexSong;
+	private boolean pause;
+	public void nextSong(ActionEvent e) {
+		if(indexSong<songs.length) {
+			 txtSong.setText(songs[indexSong++]);
+		}else {
+			indexSong=0;
+			txtSong.setText(songs[indexSong++]);
+		}
+	}
+	public void changeSong(ActionEvent e){
+		audio.changeSong(txtSong.getText());
+	}
+	public void pauseOrResumeMusic(ActionEvent e) {
+		if(pause) {
+			System.out.println("continue");
+			pause=false;
+			audio.resumeMusic();
+		}else {
+			pause=true;
+			System.out.println("no continue");
+			audio.pauseMusic();
+		}
+	}
 	/**
 	 * method to login
 	 * @param e
@@ -241,14 +269,25 @@ public class Controller implements Initializable{
 	 */
 	private void startGame(int portGameHoster, String nickname) {
 		try {
+			pause=true;
+			songs= new String[] {"malu","veneno","remix","disfruto"};
 			audio= new ThreadAudioClientUDP();
 			audio.start();
 			socketGame=new Socket(IP_DIRECTION,portGameHoster);
 			receiveGame=new BufferedReader(new InputStreamReader(socketGame.getInputStream()));
 			transmitMovements=new BufferedWriter(new OutputStreamWriter(socketGame.getOutputStream()));
+			//STEVEN
+			transmitMovements.write(audio.getAudioPort()+" "+audio.getFormatPort()+"\n");
+			transmitMovements.flush();;
+//			System.out.println(audio.getAudioPort()+" "+audio.getFormatPort());
+			
+			//STEVEN
 			transmitMovements.write(GameHoster.PLAYER+"\n");			
 			transmitMovements.write(nickname+"\n");
 			transmitMovements.flush();
+			int portChangeSong=Integer.parseInt(receiveGame.readLine());
+			audio.setChangingSocketPort(portChangeSong);
+			System.out.println(portChangeSong);
 			System.out.println("GameStarting");
 			new GUIGameUpdateControlThread(this).start();
 			Thread.sleep(2000);

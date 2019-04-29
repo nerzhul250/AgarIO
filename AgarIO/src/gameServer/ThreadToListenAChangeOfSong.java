@@ -14,11 +14,14 @@ public class ThreadToListenAChangeOfSong extends Thread {
 	public ThreadToListenAChangeOfSong(ThreadAudioServerUDP thread) {
 		threadAudioServerUDP= thread;
 		try {
-			socketSongs= new DatagramSocket(SONGS_PORT);
+			socketSongs= new DatagramSocket();
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	public int getSongPort() {
+		return socketSongs.getLocalPort();
 	}
 	public void run() {
 		listenToChangeSong();
@@ -29,8 +32,15 @@ public class ThreadToListenAChangeOfSong extends Thread {
 			DatagramPacket receiveP= new DatagramPacket(song, song.length);
 			try {
 				socketSongs.receive(receiveP);
-				String songName = new String(receiveP.getData());
-				threadAudioServerUDP.changeAudio(songName);
+				String[] order = new String(receiveP.getData()).trim().split(" ");
+				
+				if(order[0].contentEquals("c")) {
+					threadAudioServerUDP.changeAudio(order[1]);		
+				}else if(order[0].contentEquals("p")) {
+					threadAudioServerUDP.pauseMusic();
+				}else if(order[0].contentEquals("r")) {
+					threadAudioServerUDP.continueMusic();
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

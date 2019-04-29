@@ -30,11 +30,12 @@ public class ThreadAudioClientUDP extends Thread {
 	public final static int AUDIO_PORT =54321;
 	public final static int FORMAT_PORT= 54325;
 	public final static int CONST=60000;
+	private int changingSocketPort;
 	public ThreadAudioClientUDP()  {
 		
 		try {
-			socketAudio= new DatagramSocket(AUDIO_PORT);
-			socketFormat= new DatagramSocket(FORMAT_PORT);
+			socketAudio= new DatagramSocket();
+			socketFormat= new DatagramSocket();
 			socketSongs= new DatagramSocket();
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
@@ -46,11 +47,43 @@ public class ThreadAudioClientUDP extends Thread {
 		InitiateAudio();
 		playAudio();
 	}
-	public void changeSong(String songName) {
+	public void setChangingSocketPort(int port) {
+		changingSocketPort=port;
+	}
+	public int getAudioPort() {
+		return socketAudio.getLocalPort();
+	}
+	public int getFormatPort() {
+		return socketFormat.getLocalPort();
+	}
+	public void changeSong(String song) {
+		String songName = "c "+song; 
 		byte[] b= songName.getBytes();
 		try {
 			
-			socketSongs.send(new DatagramPacket(b, b.length, InetAddress.getByName(Controller.IP_DIRECTION),ThreadToListenAChangeOfSong.SONGS_PORT));
+			socketSongs.send(new DatagramPacket(b, b.length, InetAddress.getByName(Controller.IP_DIRECTION),changingSocketPort));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void pauseMusic() {
+		String m= "p";
+		byte[] b= m.getBytes();
+		try {
+			
+			socketSongs.send(new DatagramPacket(b, b.length, InetAddress.getByName(Controller.IP_DIRECTION),changingSocketPort));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void resumeMusic() {
+		String m= "r";
+		byte[] b= m.getBytes();
+		try {
+			
+			socketSongs.send(new DatagramPacket(b, b.length, InetAddress.getByName(Controller.IP_DIRECTION),changingSocketPort));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -95,7 +128,7 @@ public class ThreadAudioClientUDP extends Thread {
 				socketFormat.receive(packetInfo);
 				String[] info= new String(packetInfo.getData()).trim().split(" ");
 				// ...
-				
+				System.out.println( new String(packetInfo.getData()));
 
 				try {
 

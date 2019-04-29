@@ -24,19 +24,20 @@ public class ThreadAudioServerUDP extends Thread {
 	private InetAddress clientAddres;
 	private TargetDataLine targetDataLine;
 	
-	private int clientPort;
+	private int clientPortAudio;
+	private int clientFormatPort;
 	private final byte audioBuffer[] = new byte[60000];
 	private File soundFile;
 	private String fileName;
 	private AudioInputStream audioStream;
 	private boolean pause;
 
-	public ThreadAudioServerUDP(InetAddress inet, int port, String fileN) throws UnsupportedAudioFileException, IOException {
+	public ThreadAudioServerUDP(InetAddress inet, int portAudio,int portFormat, String fileN) throws UnsupportedAudioFileException, IOException {
 		clientAddres= inet;
-		clientPort= port;
+		clientPortAudio= portAudio;
 		socketAudio= new DatagramSocket();
 		socketInfo= new DatagramSocket();
-		
+		clientFormatPort= portFormat;
 		fileName= fileN;
 
 		changeAudio(fileName);
@@ -50,7 +51,9 @@ public class ThreadAudioServerUDP extends Thread {
 		pause = true;
 		if(fileN != null && !fileN.contentEquals("")) {
 			pause= false;
-			soundFile=new File("./songs/"+fileN+".wav");
+			soundFile=new File("./songs/"+fileN.trim()+".wav");
+//			soundFile=new File("C:\\Users\\Steven\\Desktop\\dataset\\"+fileN.trim()+".wav");
+			
 			audioStream= AudioSystem.getAudioInputStream(soundFile);
 			fileName= fileN;
 			if(targetDataLine!=null)
@@ -59,7 +62,7 @@ public class ThreadAudioServerUDP extends Thread {
 
 		}else {
 			
-			soundFile=new File("C:\\Users\\Steven\\Desktop\\dataset\\malu.wav");
+			soundFile=new File("./songs/malu.wav");
 			audioStream= AudioSystem.getAudioInputStream(soundFile);
 
 		}
@@ -69,7 +72,7 @@ public class ThreadAudioServerUDP extends Thread {
 		return audioStream.getFormat();
 	}
 	public int getClientPort() {
-		return clientPort;
+		return clientPortAudio;
 	}
 	public void run() {
 		while(true) {
@@ -101,12 +104,13 @@ public class ThreadAudioServerUDP extends Thread {
 			int count = audioStream.read(audioBuffer, 0, length);
 			AudioFormat aud= getAudioFormat();
 			String info= aud.getSampleRate()+" "+aud.getSampleSizeInBits()+" "+aud.getChannels();
+//			System.out.println(info);
 			byte[] convertedInfo= info.getBytes();
-			DatagramPacket packetInfo = new DatagramPacket(convertedInfo,convertedInfo.length , clientAddres,ThreadAudioClientUDP.FORMAT_PORT);
+			DatagramPacket packetInfo = new DatagramPacket(convertedInfo,convertedInfo.length , clientAddres,clientFormatPort);
 			socketInfo.send(packetInfo);
 			if (count > 0&& length != 0) {
 //				System.out.println("a");
-				DatagramPacket packet = new DatagramPacket(audioBuffer, length, clientAddres,clientPort);
+				DatagramPacket packet = new DatagramPacket(audioBuffer, length, clientAddres,clientPortAudio);
 				socketAudio.send(packet);
 				Thread.sleep(300);
 			}
@@ -117,6 +121,7 @@ public class ThreadAudioServerUDP extends Thread {
 
 		try {
 
+			
 
 			AudioFormat audioFormat= getAudioFormat();
 			DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat);
@@ -124,6 +129,7 @@ public class ThreadAudioServerUDP extends Thread {
 
 			targetDataLine = (TargetDataLine) AudioSystem.getLine(info);
 
+			
 			targetDataLine.open(audioFormat);
 			targetDataLine.start();
 			return audioFormat;

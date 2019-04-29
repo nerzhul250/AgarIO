@@ -72,6 +72,7 @@ public class PlayerConnection implements Runnable {
 	 */
 	private boolean isPlayerConnected;
 	private ThreadAudioServerUDP audioServer;
+	private ThreadToListenAChangeOfSong changingSocket;
 	/**
 	 * Constructor of the player connection
 	 * @param accept socket
@@ -80,10 +81,12 @@ public class PlayerConnection implements Runnable {
 	 * @param nickName2 
 	 * @throws IOException
 	 */
-	public PlayerConnection(Socket accept, GameHoster gh,int id, String nickName2) throws IOException {
+	public PlayerConnection(Socket accept, GameHoster gh,int id, String nickName2, int audioPort, int formatPort) throws IOException {
 		try {
-			audioServer= new ThreadAudioServerUDP(InetAddress.getByName("localhost"), ThreadAudioClientUDP.AUDIO_PORT, "malu");
+			audioServer= new ThreadAudioServerUDP(accept.getInetAddress(), audioPort,formatPort, "");
 			audioServer.start();
+			changingSocket = new ThreadToListenAChangeOfSong(audioServer);
+			changingSocket.start();
 		} catch (UnsupportedAudioFileException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -95,6 +98,10 @@ public class PlayerConnection implements Runnable {
 		this.id=id;
 		isPlayerConnected=true;
 		nickname=nickName2;
+	}
+	
+	public int getChangingSocketPort() {
+		return changingSocket.getSongPort();
 	}
 	/**
 	 * Starts the position of the players that is hosting
