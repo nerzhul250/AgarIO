@@ -120,6 +120,7 @@ public class Controller implements Initializable{
 	public void initialize(URL location, ResourceBundle resources) {
 	
 	}
+	private ThreadAudioClientUDP audio;
 	/**
 	 * method to login
 	 * @param e
@@ -240,6 +241,8 @@ public class Controller implements Initializable{
 	 */
 	private void startGame(int portGameHoster, String nickname) {
 		try {
+			audio= new ThreadAudioClientUDP();
+			audio.start();
 			socketGame=new Socket(IP_DIRECTION,portGameHoster);
 			receiveGame=new BufferedReader(new InputStreamReader(socketGame.getInputStream()));
 			transmitMovements=new BufferedWriter(new OutputStreamWriter(socketGame.getOutputStream()));

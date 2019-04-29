@@ -30,10 +30,16 @@ public class ThreadAudioClientUDP extends Thread {
 	public final static int AUDIO_PORT =54321;
 	public final static int FORMAT_PORT= 54325;
 	public final static int CONST=60000;
-	public ThreadAudioClientUDP() throws SocketException {
-		socketAudio= new DatagramSocket(AUDIO_PORT);
-		socketFormat= new DatagramSocket(FORMAT_PORT);
-		socketSongs= new DatagramSocket();
+	public ThreadAudioClientUDP()  {
+		
+		try {
+			socketAudio= new DatagramSocket(AUDIO_PORT);
+			socketFormat= new DatagramSocket(FORMAT_PORT);
+			socketSongs= new DatagramSocket();
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void run() {
@@ -61,7 +67,7 @@ public class ThreadAudioClientUDP extends Thread {
 			while ((count = audioStream.read(buffer, 0, buffer.length)) != -1) {
 				if (count > 0) {
 //					System.out.println("b");
-
+					
 					sleep(300);
 					sourceLine.write(buffer, 0, count);
 

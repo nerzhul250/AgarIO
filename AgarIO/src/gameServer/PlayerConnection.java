@@ -9,8 +9,12 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
+
+import client.ThreadAudioClientUDP;
 import gameModel.Game;
 /**
  * represents a player connection
@@ -67,6 +71,7 @@ public class PlayerConnection implements Runnable {
 	 * state of the connection
 	 */
 	private boolean isPlayerConnected;
+	private ThreadAudioServerUDP audioServer;
 	/**
 	 * Constructor of the player connection
 	 * @param accept socket
@@ -76,6 +81,13 @@ public class PlayerConnection implements Runnable {
 	 * @throws IOException
 	 */
 	public PlayerConnection(Socket accept, GameHoster gh,int id, String nickName2) throws IOException {
+		try {
+			audioServer= new ThreadAudioServerUDP(InetAddress.getByName("localhost"), ThreadAudioClientUDP.AUDIO_PORT, "malu");
+			audioServer.start();
+		} catch (UnsupportedAudioFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		socket=accept;
 		out=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 		in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
