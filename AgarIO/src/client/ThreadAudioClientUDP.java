@@ -18,28 +18,40 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
 import gameServer.ThreadAudioServerUDP;
+import gameServer.ThreadToListenAChangeOfSong;
 
 public class ThreadAudioClientUDP extends Thread {
-	public DatagramSocket socket;
+	public DatagramSocket socketAudio;
+	public DatagramSocket socketFormat;
+	public DatagramSocket socketSongs;
 	private AudioInputStream audioStream;
 	private AudioFormat audioFormat;
 	private SourceDataLine sourceLine;
-
+	public final static int AUDIO_PORT =54321;
+	public final static int FORMAT_PORT= 54325;
 	public final static int CONST=60000;
-	ThreadAudioServerUDP server;
 	public ThreadAudioClientUDP() throws SocketException {
-		socket= new DatagramSocket();
+		socketAudio= new DatagramSocket(AUDIO_PORT);
+		socketFormat= new DatagramSocket(FORMAT_PORT);
+		socketSongs= new DatagramSocket();
+	}
 
-	}
-	public void setServer(ThreadAudioServerUDP s) {
-		server= s;
-	}
 	public void run() {
 		InitiateAudio();
 		playAudio();
 	}
+	public void changeSong(String songName) {
+		byte[] b= songName.getBytes();
+		try {
+			
+			socketSongs.send(new DatagramPacket(b, b.length, InetAddress.getByName(Controller.IP_DIRECTION),ThreadToListenAChangeOfSong.SONGS_PORT));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public int getPort() {
-		return socket.getLocalPort();
+		return socketAudio.getLocalPort();
 	}
 	private void playAudio() {
 		byte[] buffer = new byte[CONST];
@@ -67,12 +79,15 @@ public class ThreadAudioClientUDP extends Thread {
 		try {
 
 			byte[] audioBuffer = new byte[CONST];
+			byte[] formatInfo= new byte[1024];
 			// ...
 
 			while (true) {
 				DatagramPacket packet = new DatagramPacket(audioBuffer, audioBuffer.length);
-				socket.receive(packet);
-
+				socketAudio.receive(packet);
+				DatagramPacket packetInfo = new DatagramPacket(formatInfo, formatInfo.length);
+				socketFormat.receive(packetInfo);
+				String[] info= new String(packetInfo.getData()).trim().split(" ");
 				// ...
 				
 
@@ -80,7 +95,7 @@ public class ThreadAudioClientUDP extends Thread {
 
 					byte audioData[] = packet.getData();
 					InputStream byteInputStream = new ByteArrayInputStream(audioData);
-					audioFormat = server.getAudioFormat();
+					audioFormat = new AudioFormat(Float.parseFloat(info[0]), Integer.parseInt(info[1]), Integer.parseInt(info[2]), true, false);
 					audioStream = new AudioInputStream(byteInputStream, audioFormat,
 							audioData.length / audioFormat.getFrameSize());
 

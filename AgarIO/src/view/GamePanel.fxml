@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
 
-<Pane fx:id="gamePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseMoved="#onMoved" prefHeight="572.0" prefWidth="649.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" />
+<Pane fx:id="gamePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseMoved="#onMoved" prefHeight="572.0" prefWidth="649.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Button layoutX="518.0" layoutY="69.0" mnemonicParsing="false" text="Reproducir" />
+      <Button layoutX="487.0" layoutY="69.0" mnemonicParsing="false" text="&lt;" />
+      <Button layoutX="600.0" layoutY="69.0" mnemonicParsing="false" text="&gt;" />
+      <TextField editable="false" layoutX="475.0" layoutY="33.0" />
+   </children>
+</Pane>

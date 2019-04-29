@@ -7,6 +7,7 @@ import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import gameModel.Game;
 import registrationManagement.Server;
@@ -62,6 +63,8 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 	 * the logical part of a game
 	 */
 	private Game gameState;
+	//TODO
+//	private HashMap<Integer, ThreadAudioServerUDP> threadsMusicPlayers;
 	/**
 	 * Constructor of a game hoster
 	 * @param ss
@@ -74,6 +77,8 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 		max_player_number=maxPlayerNumber;
 		min_player_number=minPlayerNumber;
 		gameIsOpen=true;
+		
+//		threadsMusicPlayers= new HashMap<Integer, ThreadAudioServerUDP>();
 		
 		playerConnections=new ArrayList<PlayerConnection>();
 		observersConnections=new ArrayList<ObserverConnection>();
@@ -94,6 +99,7 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 			while(GameIsOpen()) {
 				System.out.println("SERVERUP");
 				Socket s=serverSocket.accept();
+				
 				BufferedReader br=new BufferedReader(new InputStreamReader(s.getInputStream()));
 				String type= br.readLine();
 				String nickName=br.readLine();
