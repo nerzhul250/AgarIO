@@ -50,7 +50,7 @@ public class ThreadAudioServerUDP extends Thread {
 		pause = true;
 		if(fileN != null && !fileN.contentEquals("")) {
 			pause= false;
-			soundFile=new File("C:\\Users\\Steven\\Desktop\\dataset\\"+fileN+".wav");
+			soundFile=new File("./songs/"+fileN+".wav");
 			audioStream= AudioSystem.getAudioInputStream(soundFile);
 			fileName= fileN;
 			if(targetDataLine!=null)
