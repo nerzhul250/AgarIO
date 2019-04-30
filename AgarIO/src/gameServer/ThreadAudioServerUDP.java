@@ -106,9 +106,9 @@ public class ThreadAudioServerUDP extends Thread {
 			String info= aud.getSampleRate()+" "+aud.getSampleSizeInBits()+" "+aud.getChannels();
 //			System.out.println(info);
 			byte[] convertedInfo= info.getBytes();
-			DatagramPacket packetInfo = new DatagramPacket(convertedInfo,convertedInfo.length , clientAddres,clientFormatPort);
-			socketInfo.send(packetInfo);
 			if (count > 0&& length != 0) {
+				DatagramPacket packetInfo = new DatagramPacket(convertedInfo,convertedInfo.length , clientAddres,clientFormatPort);
+				socketInfo.send(packetInfo);
 //				System.out.println("a");
 				DatagramPacket packet = new DatagramPacket(audioBuffer, length, clientAddres,clientPortAudio);
 				socketAudio.send(packet);
