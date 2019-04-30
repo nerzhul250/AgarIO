@@ -35,7 +35,9 @@ public class ThreadToListenAChangeOfSong extends Thread {
 				String[] order = new String(receiveP.getData()).trim().split(" ");
 				
 				if(order[0].contentEquals("c")) {
-					threadAudioServerUDP.changeAudio(order[1]);		
+					if(order.length==2) {
+						threadAudioServerUDP.changeAudio(order[1]);								
+					}
 				}else if(order[0].contentEquals("p")) {
 					threadAudioServerUDP.pauseMusic();
 				}else if(order[0].contentEquals("r")) {
