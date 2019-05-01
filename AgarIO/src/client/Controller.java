@@ -270,7 +270,7 @@ public class Controller implements Initializable{
 	private void startGame(int portGameHoster, String nickname) {
 		try {
 			pause=true;
-			songs= new String[] {"malu","veneno","remix","disfruto"};
+			songs= new String[] {"malu","veneno","remix","disfruto", "pumped"};
 			audio= new ThreadAudioClientUDP();
 			audio.start();
 			socketGame=new Socket(IP_DIRECTION,portGameHoster);

@@ -128,7 +128,6 @@ public class ThreadAudioClientUDP extends Thread {
 				socketFormat.receive(packetInfo);
 				String[] info= new String(packetInfo.getData()).trim().split(" ");
 				// ...
-				System.out.println( new String(packetInfo.getData()));
 
 				try {
 
