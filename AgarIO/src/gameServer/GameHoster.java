@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 import gameModel.Game;
 import registrationManagement.Server;
+import serverChat.ServerChat;
 /**
  * Represents a game
  * @author Steven
@@ -65,6 +66,8 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 	 * the logical part of a game
 	 */
 	private Game gameState;
+	
+	private ServerChat chat;
 	//TODO
 //	private HashMap<Integer, ThreadAudioServerUDP> threadsMusicPlayers;
 	/**
@@ -85,6 +88,8 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 		playerConnections=new ArrayList<PlayerConnection>();
 		observersConnections=new ArrayList<ObserverConnection>();
 		server=s;
+		chat = new ServerChat();
+		chat.start();
 		
 		gameState=new Game();
 		serverSocket=ss;
@@ -131,6 +136,7 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 				}
 				
 			}
+			chat.takeDownServer();
 		}catch(IOException ioe) {
 			
 		}

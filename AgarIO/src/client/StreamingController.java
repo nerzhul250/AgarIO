@@ -19,12 +19,15 @@ import java.util.ResourceBundle;
 
 import gameModel.Game;
 import gameServer.GameHoster;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -72,12 +75,19 @@ public class StreamingController implements Initializable {
 	@FXML
 	private Pane observerPane;
 	
+	@FXML
+	private TextArea txtAreaAllChat;
+	
+	@FXML
+	private TextField txtUserMessage;
 	
 	private Socket chatSocket;
 	
 	private DataInputStream inputChat;
 	
 	private DataOutputStream outputChat;
+	
+	private ChatController chat;
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -120,6 +130,7 @@ public class StreamingController implements Initializable {
 			transmit.flush();
 			System.out.println("StreamingStarting");
 			streamingEnd=new DatagramSocket(socket.getLocalPort());
+			startChat(nickname);
 			(new GUIStreamingUpdateControlThread(this)).start();
 			Thread.sleep(2000);
 		} catch (InterruptedException | IOException e1) {
@@ -229,6 +240,16 @@ public class StreamingController implements Initializable {
 			observerPane.getChildren().remove(gameObjects.get(toRemove.get(i)).name);
 			gameObjects.remove(toRemove.get(i));
 		}
+	}
+	
+	public void startChat(String userNick) {
+		chat = new ChatController(userNick, txtAreaAllChat);
+		chat.startReceivingMessages();
+	}
+	
+	public void sendMessage(ActionEvent e) {
+		String toSend = txtUserMessage.getText();
+		chat.sendMessage(toSend);
 	}
 
 }

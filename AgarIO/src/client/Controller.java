@@ -528,5 +528,6 @@ public class Controller implements Initializable{
 		al.setContentText(info);
 		al.showAndWait();
 	}
+	
 
 }

@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
 
-<Pane fx:id="observerPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onClicked" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" />
+<AnchorPane prefHeight="506.0" prefWidth="851.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Pane fx:id="observerPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onClicked" prefHeight="506.0" prefWidth="626.0" />
+      <TextArea fx:id="txtAreaAllChat" editable="false" layoutX="625.0" prefHeight="403.0" prefWidth="224.0" />
+      <TextField fx:id="txtUserMessage" layoutX="625.0" layoutY="424.0" />
+      <Button layoutX="738.0" layoutY="456.0" mnemonicParsing="false" onAction="#sendMessage" text="Enviar mensaje" />
+   </children>
+</AnchorPane>
