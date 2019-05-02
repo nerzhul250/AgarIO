@@ -94,8 +94,12 @@ public class ThreadAudioServerUDP extends Thread {
 
 			audioStream = AudioSystem.getAudioInputStream(soundFile);
 			fileName = fileN;
-			if (targetDataLine != null)
+			if (targetDataLine != null) {
+				
+				
 				targetDataLine.close();
+				System.out.println("targetData: closed");
+			}
 			setupAudio();
 
 		} else {
@@ -179,9 +183,17 @@ public class ThreadAudioServerUDP extends Thread {
 			AudioFormat audioFormat = getAudioFormat();
 			DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat);
 
+			
 			targetDataLine = (TargetDataLine) AudioSystem.getLine(info);
 
-			targetDataLine.open(audioFormat);
+			try {
+				
+				targetDataLine.open(audioFormat);
+				
+			}catch (Exception e) {
+				// TODO: handle exception
+			}
+			
 			targetDataLine.start();
 			return audioFormat;
 		} catch (Exception ex) {

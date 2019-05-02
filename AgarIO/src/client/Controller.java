@@ -279,13 +279,14 @@ public class Controller implements Initializable{
 			//STEVEN
 			transmitMovements.write(audio.getAudioPort()+" "+audio.getFormatPort()+"\n");
 			transmitMovements.flush();;
-//			System.out.println(audio.getAudioPort()+" "+audio.getFormatPort());
+//			System.out.println("audio and format: "+audio.getAudioPort()+" "+audio.getFormatPort());
 			
 			//STEVEN
 			transmitMovements.write(GameHoster.PLAYER+"\n");			
 			transmitMovements.write(nickname+"\n");
 			transmitMovements.flush();
 			int portChangeSong=Integer.parseInt(receiveGame.readLine());
+			System.out.println("change: "+portChangeSong);
 			audio.setChangingSocketPort(portChangeSong);
 			System.out.println(portChangeSong);
 			System.out.println("GameStarting");

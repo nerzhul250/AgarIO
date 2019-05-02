@@ -54,7 +54,7 @@ public class ThreadToListenAChangeOfSong extends Thread {
 			try {
 				socketSongs.receive(receiveP);
 				String[] order = new String(receiveP.getData()).trim().split(" ");
-				
+//				System.out.println(new String(receiveP.getData()));
 				if(order[0].contentEquals("c")) {
 					if(order.length==2) {
 						threadAudioServerUDP.changeAudio(order[1]);								

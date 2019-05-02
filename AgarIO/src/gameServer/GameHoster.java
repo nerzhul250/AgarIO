@@ -120,6 +120,7 @@ public class GameHoster implements Runnable, Comparable<GameHoster> {
 					PlayerConnection pc=new PlayerConnection(s,this,index++,nickName,Integer.parseInt(ports[0]),Integer.parseInt(ports[1]));
 					//STEVEN
 					bw.write(pc.getChangingSocketPort()+"\n");
+					System.out.println("changing: "+pc.getChangingSocketPort());
 					bw.flush();
 					//STEVEN
 					System.out.println(pc.getId());

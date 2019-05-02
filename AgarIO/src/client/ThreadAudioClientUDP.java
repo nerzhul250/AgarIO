@@ -62,6 +62,7 @@ public class ThreadAudioClientUDP extends Thread {
 		try {
 			
 			socketSongs.send(new DatagramPacket(b, b.length, InetAddress.getByName(Controller.IP_DIRECTION),changingSocketPort));
+			System.out.println("sent");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -128,7 +129,7 @@ public class ThreadAudioClientUDP extends Thread {
 				socketFormat.receive(packetInfo);
 				String[] info= new String(packetInfo.getData()).trim().split(" ");
 				// ...
-
+				System.out.println(new String(packetInfo.getData()));
 				try {
 
 					byte audioData[] = packet.getData();
