@@ -11,17 +11,29 @@ import javafx.scene.control.TextArea;
 import serverChat.ServerChat;
 
 public class ChatController {
-
+	/**
+	 * Socket for the server
+	 */
 	private Socket socketToServer;
-	
+	/**
+	 * DataInputStream to read
+	 */
 	private DataInputStream inputStream;
-	
+	/**
+	 * DataOutputStream to send
+	 */
 	private DataOutputStream outputStream;
-	
+	/**
+	 * Name of the user
+	 */
 	private String userName;
-	
+	/**
+	 * Chat area
+	 */
 	private TextArea areaOfChat;
-	
+	/**
+	 * Constructor
+	 */
 	public ChatController (String userNickName, TextArea area) {
 		try {
 			socketToServer = new Socket(Controller.IP_DIRECTION, ServerChat.PORT);
@@ -39,7 +51,9 @@ public class ChatController {
 			al.showAndWait();
 		}
 	}
-	
+	/**
+	 * Method that send the message
+	 */
 	public void sendMessage (String message) {
 		try {
 			outputStream.writeUTF(userName + ": " +message + "\n");
@@ -53,7 +67,9 @@ public class ChatController {
 			al.showAndWait();
 		}
 	}
-	
+	/**
+	 * Method that recive the message
+	 */
 	public void startReceivingMessages () {
 		Thread threadReceive = new Thread(new Runnable() {
 			

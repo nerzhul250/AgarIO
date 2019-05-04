@@ -74,19 +74,31 @@ public class StreamingController implements Initializable {
 	
 	@FXML
 	private Pane observerPane;
-	
+	/**
+	 * Area when he can watch all the messages
+	 */
 	@FXML
 	private TextArea txtAreaAllChat;
-	
+	/**
+	 * Watch the user who sends the message
+	 */
 	@FXML
 	private TextField txtUserMessage;
-	
+	/**
+	 * Socket for the chat
+	 */
 	private Socket chatSocket;
-	
+	/**
+	 * DataInputStream to read the message
+	 */
 	private DataInputStream inputChat;
-	
+	/**
+	 * DataOutputStream to send the message
+	 */
 	private DataOutputStream outputChat;
-	
+	/**
+	 * Chat controller
+	 */
 	private ChatController chat;
 	
 	@Override
@@ -241,12 +253,16 @@ public class StreamingController implements Initializable {
 			gameObjects.remove(toRemove.get(i));
 		}
 	}
-	
+	/**
+	 * Method that starts the chat
+	 */
 	public void startChat(String userNick) {
 		chat = new ChatController(userNick, txtAreaAllChat);
 		chat.startReceivingMessages();
 	}
-	
+	/**
+	 * Method that send the message
+	 */
 	public void sendMessage(ActionEvent e) {
 		String toSend = txtUserMessage.getText();
 		chat.sendMessage(toSend);

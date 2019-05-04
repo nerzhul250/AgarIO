@@ -5,15 +5,25 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServerChat extends Thread{
-
+	/**
+	 * Port of the server chat
+	 */
 	public final static int PORT = 1224;
-	
+	/**
+	 * Server socket
+	 */
 	private ServerSocket server;
-	
+	/**
+	 * Chat messages
+	 */
 	private ChatMessages lastChatMessage;
-	
+	/**
+	 * Status of the server
+	 */
 	boolean serverStatus;
-	
+	/**
+	 * Constructor of the class
+	 */
 	public ServerChat() {
 		lastChatMessage = new ChatMessages();
 		
@@ -31,7 +41,9 @@ public class ServerChat extends Thread{
 			}
 		}
 	}
-	
+	/**
+	 * Method that initiate the server chat
+	 */
 	@Override
 	public void run() {
 		while (serverStatus) {
@@ -60,7 +72,9 @@ public class ServerChat extends Thread{
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * Turn down the server
+	 */
 	public void takeDownServer() {
 		serverStatus = false;
 	}

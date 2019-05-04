@@ -28,44 +28,44 @@ public class ThreadAudioServerUDP extends Thread {
 	 */
 	private DatagramSocket socketInfo;
 	/**
-	 * InetAddress del cliente 
+	 * InetAddress of the client 
 	 */
 	private InetAddress clientAddres;
 	/**
-	 * TargetDataLine para leer la musica
+	 * TargetDataLine to read the music
 	 */
 	private TargetDataLine targetDataLine;
 	
 	/**
-	 * Puerto del cliente por donde va a escuchar el audio
+	 * Port of the client where he is going to listen the music
 	 */
 	private int clientPortAudio;
 	/**
-	 * Puerto por donde se va a leer el formato del audio
+	 * Port where the client is going to read the music
 	 */
 	private int clientFormatPort;
 	/**
-	 * bytes de lecturas de la musica
+	 * bytes that read the music
 	 */
 	private final byte audioBuffer[] = new byte[60000];
 	/**
-	 * Archivo donde esta la musica
+	 * File where is the music
 	 */
 	private File soundFile;
 	/**
-	 * Nombre del archivo donde esta la musica
+	 * Name of the file where is the music
 	 */
 	private String fileName;
 	/**
-	 * Especificacion del audio y su longitud
+	 * Audio Stream
 	 */
 	private AudioInputStream audioStream;
 	/**
-	 * boolean para pausar y reanudar la musica
+	 * boolean to pause or reanudate the music
 	 */
 	private boolean pause;
 	/**
-	 * Constructor de la clase threadAudioServerUDP
+	 * Constructor
 	 */
 	public ThreadAudioServerUDP(InetAddress inet, int portAudio, int portFormat, String fileN)
 			throws UnsupportedAudioFileException, IOException {
@@ -83,7 +83,7 @@ public class ThreadAudioServerUDP extends Thread {
 			pause = true;
 	}
 	/**
-	 * Metodo que cambia la cancion que se esta escuchando
+	 * Method that change the music that's playing
 	 */
 	public void changeAudio(String fileN) throws UnsupportedAudioFileException, IOException {
 		pause = true;
@@ -111,19 +111,19 @@ public class ThreadAudioServerUDP extends Thread {
 
 	}
 	/**
-	 * Obtener el formato del audio
+	 * Get the audio format
 	 */
 	public AudioFormat getAudioFormat() {
 		return audioStream.getFormat();
 	}
 	/**
-	 * Obtener el puerto del cliente
+	 * Get the port of the client
 	 */
 	public int getClientPort() {
 		return clientPortAudio;
 	}
 	/**
-	 * Inicializa la musica enviandola a los usuarios
+	 * Sends the music to the client
 	 */
 	public void run() {
 		while (true) {
@@ -139,19 +139,19 @@ public class ThreadAudioServerUDP extends Thread {
 
 	}
 	/**
-	 * Pausa la musica
+	 * Pause the music
 	 */
 	public void pauseMusic() {
 		pause = true;
 	}
 	/**
-	 * Continua la musica
+	 * Continue the music
 	 */
 	public void continueMusic() {
 		pause = false;
 	}
 	/**
-	 * Metodo que envia el audio a los clientes y espectadores
+	 * Methof that send the audio to the client and viewers
 	 */
 	public void sendAudio() throws IOException, LineUnavailableException, InterruptedException {
 
@@ -176,7 +176,7 @@ public class ThreadAudioServerUDP extends Thread {
 		}
 	}
 	/**
-	 * Metodo que retorna el audio
+	 * Method that return the audio
 	 */
 	public AudioFormat setupAudio() {
 		try {

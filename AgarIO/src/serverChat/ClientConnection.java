@@ -9,12 +9,25 @@ import java.util.Observer;
 import javafx.beans.Observable;
 
 public class ClientConnection implements Runnable, Observer{
-
+	/**
+	 * Chat messages
+	 */
 	private ChatMessages messages;
+	/**
+	 * Socket
+	 */
 	Socket conection;
+	/**
+	 * DataInputSteam
+	 */
 	DataInputStream inputData;
+	/**
+	 * DataOutputStream
+	 */
 	DataOutputStream outputData;
-	
+	/**
+	 * Constructor of the class
+	 */
 	public ClientConnection(Socket socket, ChatMessages messages) {
 		conection = socket;
 		this.messages = messages;
@@ -28,7 +41,9 @@ public class ClientConnection implements Runnable, Observer{
 		}
 		
 	}
-
+	/**
+	 * Update conection
+	 */
 	@Override
 	public void update(java.util.Observable arg0, Object arg1) {
 		try {
