@@ -278,7 +278,7 @@ public class Controller implements Initializable{
 			transmitMovements=new BufferedWriter(new OutputStreamWriter(socketGame.getOutputStream()));
 			//STEVEN
 			transmitMovements.write(audio.getAudioPort()+" "+audio.getFormatPort()+"\n");
-			transmitMovements.flush();;
+			transmitMovements.flush();
 //			System.out.println("audio and format: "+audio.getAudioPort()+" "+audio.getFormatPort());
 			
 			//STEVEN

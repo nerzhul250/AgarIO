@@ -137,6 +137,7 @@ public class StreamingController implements Initializable {
 			socket=new Socket(Controller.IP_DIRECTION,portGameHoster);
 			receive=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			transmit=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+			transmit.write("dummy"+" "+"dummy"+"\n");
 			transmit.write(GameHoster.OBSERVER+"\n");
 			transmit.write(nickname+"\n");
 			transmit.flush();
