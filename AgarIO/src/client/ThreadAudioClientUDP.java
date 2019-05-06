@@ -21,16 +21,49 @@ import gameServer.ThreadAudioServerUDP;
 import gameServer.ThreadToListenAChangeOfSong;
 
 public class ThreadAudioClientUDP extends Thread {
+	/**
+	 * Audio Socket
+	 */
 	public DatagramSocket socketAudio;
+	/**
+	 * Socket Format
+	 */
 	public DatagramSocket socketFormat;
+	/**
+	 * Socket Songs
+	 */
 	public DatagramSocket socketSongs;
+	/**
+	 * Input Audio
+	 */
 	private AudioInputStream audioStream;
+	/**
+	 * Output Audio
+	 */
 	private AudioFormat audioFormat;
+	/**
+	 * Source Line
+	 */
 	private SourceDataLine sourceLine;
+	/**
+	 * Port of the audio
+	 */
 	public final static int AUDIO_PORT =54321;
+	/**
+	 * Port of the format audio
+	 */
 	public final static int FORMAT_PORT= 54325;
+	/**
+	 * Constant
+	 */
 	public final static int CONST=60000;
+	/**
+	 * Change socket port
+	 */
 	private int changingSocketPort;
+	/**
+	 * Constructor class
+	 */
 	public ThreadAudioClientUDP()  {
 		
 		try {
@@ -42,20 +75,34 @@ public class ThreadAudioClientUDP extends Thread {
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 * Play Audio
+	 */
 	public void run() {
 		InitiateAudio();
 		playAudio();
 	}
+	/**
+	 * Metod that change the socket port
+	 */
 	public void setChangingSocketPort(int port) {
 		changingSocketPort=port;
 	}
+	/**
+	 * Get the audio port
+	 */
 	public int getAudioPort() {
 		return socketAudio.getLocalPort();
 	}
+	/**
+	 * Get format port
+	 */
 	public int getFormatPort() {
 		return socketFormat.getLocalPort();
 	}
+	/**
+	 * Change the song
+	 */
 	public void changeSong(String song) {
 		String songName = "c "+song; 
 		byte[] b= songName.getBytes();
@@ -68,6 +115,9 @@ public class ThreadAudioClientUDP extends Thread {
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * Pause the music
+	 */
 	public void pauseMusic() {
 		String m= "p";
 		byte[] b= m.getBytes();
@@ -79,6 +129,9 @@ public class ThreadAudioClientUDP extends Thread {
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * Resume the music
+	 */
 	public void resumeMusic() {
 		String m= "r";
 		byte[] b= m.getBytes();
@@ -90,9 +143,15 @@ public class ThreadAudioClientUDP extends Thread {
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * Get port
+	 */
 	public int getPort() {
 		return socketAudio.getLocalPort();
 	}
+	/**
+	 * Start to play the music
+	 */
 	private void playAudio() {
 		byte[] buffer = new byte[CONST];
 		try {
@@ -113,7 +172,9 @@ public class ThreadAudioClientUDP extends Thread {
 		}
 	}
 
-
+	/**
+	 * Initiate the audio
+	 */
 	public void InitiateAudio() {
 
 		try {

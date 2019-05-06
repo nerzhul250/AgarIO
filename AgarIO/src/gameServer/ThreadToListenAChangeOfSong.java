@@ -9,7 +9,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class ThreadToListenAChangeOfSong extends Thread {
 	/**
-	 * Puerto por donde se va a prestar el servicio de sonido
+	 * Port of the songs
 	 */
 	public final static int SONGS_PORT=54389;
 	/**
@@ -17,11 +17,11 @@ public class ThreadToListenAChangeOfSong extends Thread {
 	 */
 	private DatagramSocket socketSongs;
 	/**
-	 * Audio del servidor
+	 * Audio server
 	 */
 	private ThreadAudioServerUDP threadAudioServerUDP;
 	/**
-	 * Constructor de la clase
+	 * Constructor class
 	 */
 	public ThreadToListenAChangeOfSong(ThreadAudioServerUDP thread) {
 		threadAudioServerUDP= thread;
@@ -33,19 +33,19 @@ public class ThreadToListenAChangeOfSong extends Thread {
 		}
 	}
 	/**
-	 * obtener el puerto del cliente
+	 * get the local port
 	 */
 	public int getSongPort() {
 		return socketSongs.getLocalPort();
 	}
 	/**
-	 * Iniciar el cambio de musica
+	 * Change the musig
 	 */
 	public void run() {
 		listenToChangeSong();
 	}
 	/**
-	 * Metodo que esta pendiente si el usuario quiere cambiar, pausar o reanudar la cancion
+	 * Methot that is waiting if the client want to change, pause or start the song
 	 */
 	public void listenToChangeSong() {
 		while(true) {
