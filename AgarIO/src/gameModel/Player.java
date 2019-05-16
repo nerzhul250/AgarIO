@@ -1,5 +1,7 @@
 package gameModel;
 
+import java.util.Date;
+
 /**
  * Represents a player
  * @author Steven
@@ -44,6 +46,10 @@ public class Player extends GameObject{
 	 * @param y
 	 * @param id
 	 */
+	private int gamesplayed;
+	private int wons;
+	private int perdidas;
+	private int alimentosComidos;
 	public Player(int x, int y,int id) {
 		super(x, y);
 		idOfPrey=-1;
@@ -51,7 +57,18 @@ public class Player extends GameObject{
 		isAlive=true;
 		destination=new Coordinate(getPosition().x,getPosition().y);
 		this.id=id;
+		alimentosComidos=0;
 		setWeight(INITIALWEIGHT);
+	}
+	public void aumentarAlimentos() {
+		alimentosComidos++;
+	}
+	
+	public int getAlimentosComidos() {
+		return alimentosComidos;
+	}
+	public void setAlimentosComidos(int alimentosComidos) {
+		this.alimentosComidos = alimentosComidos;
 	}
 	/**
 	 * sets if the player is alive
@@ -159,5 +176,39 @@ public class Player extends GameObject{
 		}
 		return c;
 	}
+	public void aumentarPartidas() {
+		gamesplayed++;
+	}
+	
+	public String retornarFecha() {
+		Date objdate=new Date();
+		String fecha=objdate.toString();
+		return fecha;
+	}
+	public int getGamesplayed() {
+		return gamesplayed;
+	}
+	public void setGamesplayed(int gamesplayed) {
+		this.gamesplayed = gamesplayed;
+	}
+	public int getWons() {
+		if(this.isAlive) {
+			wons++;
+		}
+		return wons;
+	}
+	public void setWons(int wons) {
+		this.wons = wons;
+	}
+	public int getPerdidas() {
+		if(this.isAlive==false) {
+			perdidas++;
+		}
+		return perdidas;
+	}
+	public void setPerdidas(int perdidas) {
+		this.perdidas = perdidas;
+	}
+	
 
 }

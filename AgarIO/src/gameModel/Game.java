@@ -1,5 +1,11 @@
 package gameModel;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +43,7 @@ public class Game implements Runnable{
 	/**
 	 * is the size of the podium
 	 */
-	public final static int PODIUMSIZE=3;
+	public final static int PODIUMSIZE=5;
 	/**
 	 * 
 	 */
@@ -65,10 +71,12 @@ public class Game implements Runnable{
 	/**
 	 * Constructor of one game
 	 */
+	private ArrayList<Player> textos;
 	public Game() {
 		gameObjects=new HashMap<Coordinate,GameObject>(); 
 		players=new HashMap<Integer,Player>();
 		objectsState="0:0:1:0:0:";
+		textos=new ArrayList<Player>();
 	}
 	/**
 	 * Spawns the food in randomized positions
@@ -125,6 +133,7 @@ public class Game implements Runnable{
 						}else if(gameObjects.get(c) instanceof Food) {
 							Food f=(Food) gameObjects.get(c);
 							p.grow(f.getWeight());
+							p.aumentarAlimentos();
 							gameObjects.remove(c);
 							amountOfFood--;
 						}
@@ -154,6 +163,7 @@ public class Game implements Runnable{
 		p.setGlobalIndex(gameObjectIdexes++);
 		players.put(id, p);
 		gameObjects.put(p.getPosition(),p);
+		textos.add(p);
 	}
 
 	/**
@@ -194,6 +204,7 @@ public class Game implements Runnable{
 				e.printStackTrace();
 			}
 		}
+		
 	}
 	/**
 	 * prepares the info of the state of the game to be sent to the clients
@@ -270,5 +281,38 @@ public class Game implements Runnable{
 	public int getGreatestScorer() {
 		ArrayList<Player> podium=getPodium();
 		return podium.get(podium.size()-1).getId();
+	}
+	public void guardarListaPodium() throws IOException {
+		System.out.println("Entro");
+		File guardarArchivo=new File("./data/Informacion.txt");
+		System.out.println("Creo el archivo");
+		System.out.println(textos.size());
+		BufferedReader lector=new BufferedReader(new FileReader(guardarArchivo));
+		System.out.println("Leyo");
+		try {
+			PrintWriter p=new PrintWriter(guardarArchivo);
+			String linea=lector.readLine();
+			boolean parar=true;
+			while(parar) {
+				if(linea.isEmpty()) {
+					for (int i = 0; i < textos.size(); i++) {
+						p.write(textos.get(i).getName()+" "+textos.get(i).getWeight()+" "+textos.get(i).getWons()+" "+textos.get(i).getPerdidas()+" "+textos.get(i).getGamesplayed()+" "+textos.get(i).retornarFecha()+" "+textos.get(i).isAlive()+" "+textos.get(i).getId());				
+				}
+					parar=false;
+					System.out.println("Termino de leer");
+				}
+				else {
+					linea=lector.readLine();
+					System.out.println("Esta leyendo lineas");
+				}
+			}
+//			String[] datos= {"NickName","Score","Partidas ganadas","Partidas Perdidas","Partidas Jugadas","Fecha Jugada","Ganador"};
+//			p.write(datos[0]+" "+datos[1]+" "+datos[2]+" "+datos[3]+" "+datos[4]+" "+datos[5]+" "+datos[6]);
+			p.close();
+			lector.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

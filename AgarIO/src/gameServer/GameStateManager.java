@@ -83,6 +83,7 @@ public class GameStateManager implements Runnable {
 				gamehoster.getPlayerConnections().get(i).sendGameState(gamehoster.getGame().getObjectsState());
 				if(!gamehoster.getGame().players.get(gamehoster.getPlayerConnections().get(i).getId()).isAlive()) {
 					PlayerConnection con=gamehoster.getPlayerConnections().remove(i);
+					
 					i--;
 					con.sendFinalMessage(PlayerConnection.FINALMESSAGE,PlayerConnection.LOSTMESSAGE,"Te han comido");
 				}
@@ -92,6 +93,7 @@ public class GameStateManager implements Runnable {
 			}
 			Thread.sleep(Server.GAMEPACE);
 		}
+		gamehoster.getGame().guardarListaPodium();
 		System.out.println("STOP SENDING GAMESTATE");
 		for (int i = 0; i < gamehoster.getPlayerConnections().size(); i++) {
 			if(gamehoster.getGame().getGreatestScorer()==gamehoster.getPlayerConnections().get(i).getId()) {

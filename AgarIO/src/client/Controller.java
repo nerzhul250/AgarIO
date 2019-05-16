@@ -258,7 +258,6 @@ public class Controller implements Initializable{
 			stage.setScene(scene);
 			stage.show();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
@@ -293,7 +292,6 @@ public class Controller implements Initializable{
 			new GUIGameUpdateControlThread(this).start();
 			Thread.sleep(2000);
 		} catch (InterruptedException | IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
@@ -301,6 +299,8 @@ public class Controller implements Initializable{
 	 * method to register an user
 	 * @param e
 	 */
+	//TODO
+	
 	@FXML
 	public void register (ActionEvent e) {
 		System.setProperty("javax.net.ssl.trustStore", TRUSTTORE_LOCATION);
@@ -369,7 +369,6 @@ public class Controller implements Initializable{
 			stage.setScene(scene);
 			stage.show();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
