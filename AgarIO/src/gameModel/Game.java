@@ -285,23 +285,27 @@ public class Game implements Runnable{
 	public void guardarListaPodium() throws IOException {
 		System.out.println("Entro");
 		File guardarArchivo=new File("./data/Informacion.txt");
-		System.out.println("Creo el archivo");
+		if(!guardarArchivo.exists()) {
+			guardarArchivo.createNewFile();
+			System.out.println("Creo el archivo");
+		}
 		System.out.println(textos.size());
-		BufferedReader lector=new BufferedReader(new FileReader(guardarArchivo));
+		BufferedReader lector=new BufferedReader(new FileReader("./data/Informacion.txt"));
 		System.out.println("Leyo");
-		try {
 			PrintWriter p=new PrintWriter(guardarArchivo);
+			System.out.println("Yes");
 			String linea=lector.readLine();
 			boolean parar=true;
 			while(parar) {
-				if(linea.isEmpty()) {
+				if(linea=="" || linea==null) {
 					for (int i = 0; i < textos.size(); i++) {
-						p.write(textos.get(i).getName()+" "+textos.get(i).getWeight()+" "+textos.get(i).getWons()+" "+textos.get(i).getPerdidas()+" "+textos.get(i).getGamesplayed()+" "+textos.get(i).retornarFecha()+" "+textos.get(i).isAlive()+" "+textos.get(i).getId());				
-				}
+						p.write(textos.get(i).getName()+" "+textos.get(i).getWeight()+" "+textos.get(i).getAlimentosComidos()+" "+textos.get(i).getGamesplayed()+" "+textos.get(i).retornarFecha()+" "+textos.get(i).isAlive());				
+						p.println();
+					}
 					parar=false;
 					System.out.println("Termino de leer");
 				}
-				else {
+				else if(linea!=""){
 					linea=lector.readLine();
 					System.out.println("Esta leyendo lineas");
 				}
@@ -310,9 +314,5 @@ public class Game implements Runnable{
 //			p.write(datos[0]+" "+datos[1]+" "+datos[2]+" "+datos[3]+" "+datos[4]+" "+datos[5]+" "+datos[6]);
 			p.close();
 			lector.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 }

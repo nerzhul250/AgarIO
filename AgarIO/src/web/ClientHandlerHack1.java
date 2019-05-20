@@ -1,6 +1,7 @@
 package web;
 
 import java.net.*;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.io.*;
 
@@ -55,19 +56,21 @@ public class ClientHandlerHack1 implements Runnable {
 					if (httpQueryString.contains("/?gift=")) {
 						System.out.println("Get method processed");
 						String[] response = httpQueryString.split("gift=");
+						ArrayList<String>nombres=new ArrayList<String>();
+						BufferedReader lector=new BufferedReader(new FileReader("./data/Informacion.txt"));
+						boolean parar=true;
+						while(parar) {
+							String linea=lector.readLine();
+							nombres.add(linea);
+							linea=lector.readLine();
+							if(linea==null || linea==" ") {
+								parar=true;
+							}
+						}
 						StringBuilder responseBuffer = new StringBuilder();
-						responseBuffer.append("<html>").append("<head> <title> hacked! </title> " + "<script> "
-								+ "window.setTimeout(kuky, 1000);" + "function kuky(){" + "while(true){"
-								+ "alert(\"coffee!!\");" + "};" + "};" + "</script> " + "<style>" + "body{"
-								+ "cursor: url(\"http://www.banderas-del-mundo.com/America_del_Sur/Colombia/colombia_mwd.gif\"), auto;"
-								+ "}" + "</style>" + "</head> ").append("<body bgcolor='black'>")
-								.append("<font color='white'>[0][1][0]</font><br>")
-								.append("<font color='white'>[0][0][1]</font><br>")
-								.append("<font color='white'>[1][1][1]</font><br>")
-								.append("<h1 style='color:white'> NO!!!" + response[1] + "</h1>")
-								.append("<img src='https://s2.glbimg.com/QJD0YP7szRqJuSEUdGHPF_2Dwqs=/850x446/s.glbimg.com/po/tt/f/original/2012/06/01/pirata-e1314380534977.jpg'>")
-								.append("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/mK4t8U3eSAI?autoplay=1\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" ></iframe>")
-								.append("</body>").append("</html>");
+						responseBuffer.append("<html>").append("<head> <title>Informacion jugador</title>"+"</head>").append("<body bgcolor='white'>")
+						.append("<table>").append("<tr> <th>Nick</th><th>masa</th><th>alimentos comidos</th><th>jugador</th><th>fecha jugada</th><th>gano</th> </tr>")
+						.append("</body>").append("</html>");
 						sendResponse(socket, 200, responseBuffer.toString());
 
 					}

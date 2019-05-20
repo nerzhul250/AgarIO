@@ -1,0 +1,3 @@
+anita 10.0 4 0 Mon May 20 01:11:31 COT 2019 false
+OPOII 23.0 10 0 Mon May 20 01:11:31 COT 2019 true
+juan 3.0 0 0 Mon May 20 01:11:31 COT 2019 false
